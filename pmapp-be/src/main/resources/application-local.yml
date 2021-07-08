@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/pmapp
+    username: postgres
+    password: pmapp
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties:
+      hibernate:
+        show-sql: true
+        format_sql: true
+        generate_statistics: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect

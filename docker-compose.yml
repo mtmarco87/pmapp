@@ -1,0 +1,24 @@
+# postgres/pmapp user/password credentials
+version: '3.7'
+
+services:
+
+  db:
+    image: postgres
+#    networks:
+#     - webnet
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: pmapp
+      POSTGRES_USER: postgres
+      POSTGRES_DB: pmapp
+    ports:
+      - 5432:5432
+#    volumes:
+#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 9000:8080
