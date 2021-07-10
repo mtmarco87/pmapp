@@ -1,29 +1,29 @@
-package com.ricardo.pmappbe.persistence.models.entities;
+package com.ricardo.pmapp.persistence.models.entities;
 
-import com.ricardo.pmappbe.persistence.models.enums.Role;
+import com.ricardo.pmapp.persistence.models.enums.Role;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 
 /**
  * This entity represents an User
  */
 
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"username", "email"})})
 @ToString
+@EqualsAndHashCode
 public class User {
 
+    @Id
     @Column(nullable = false)
     private String username;
 
-    @Id
     @Email
     @Column(nullable = false)
     private String email;
@@ -35,8 +35,7 @@ public class User {
 
     private String surname;
 
-    @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
-
 }

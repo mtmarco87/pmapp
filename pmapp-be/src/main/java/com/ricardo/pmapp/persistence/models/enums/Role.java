@@ -1,4 +1,4 @@
-package com.ricardo.pmappbe.persistence.models.enums;
+package com.ricardo.pmapp.persistence.models.enums;
 
 public enum Role {
     Administrator,

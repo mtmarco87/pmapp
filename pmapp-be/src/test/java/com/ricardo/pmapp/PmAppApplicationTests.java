@@ -1,10 +1,10 @@
-package com.ricardo.pmappbe;
+package com.ricardo.pmapp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PmAppBeApplicationTests {
+class PmAppApplicationTests {
 
 	@Test
 	void contextLoads() {
