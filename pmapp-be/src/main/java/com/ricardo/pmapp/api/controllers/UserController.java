@@ -4,6 +4,7 @@ import com.ricardo.pmapp.exceptions.UserCreationException;
 import com.ricardo.pmapp.exceptions.UserNotFoundException;
 import com.ricardo.pmapp.api.converters.UserConverter;
 import com.ricardo.pmapp.api.models.dtos.UserDto;
+import com.ricardo.pmapp.exceptions.UserUpdateException;
 import com.ricardo.pmapp.persistence.models.enums.Role;
 import com.ricardo.pmapp.security.auth.CurrentUser;
 import com.ricardo.pmapp.security.models.UserPrincipal;
@@ -40,8 +41,7 @@ public class UserController {
 
     @RolesAllowed("Administrator")
     @GetMapping("/{username}")
-    public UserDto getUserByUsername(@CurrentUser UserPrincipal user, @PathVariable String username) throws UserNotFoundException {
-        String a = "!23";
+    public UserDto getUserByUsername(@PathVariable String username) throws UserNotFoundException {
         return userConverter.ToDto(userService.getByUsername(username));
     }
 
@@ -52,6 +52,12 @@ public class UserController {
     }
 
     @RolesAllowed("Administrator")
+    @GetMapping("/all")
+    public List<UserDto> findAllUsers() {
+        return userService.findAll().stream().map(userConverter::ToDto).collect(Collectors.toList());
+    }
+
+    @RolesAllowed("Administrator")
     @GetMapping("/findByRole/{role}")
     public List<UserDto> findUsersByRole(@PathVariable Role role) {
         return userService.findByRole(role).stream().map(userConverter::ToDto).collect(Collectors.toList());
@@ -59,14 +65,16 @@ public class UserController {
 
     @RolesAllowed("Administrator")
     @PutMapping("/{username}")
-    public UserDto updateUserByUsername(@RequestBody UserDto userDto, @PathVariable String username) throws UserNotFoundException {
+    public UserDto updateUserByUsername(@RequestBody UserDto userDto, @PathVariable String username)
+            throws UserNotFoundException, UserUpdateException {
         userDto.setUsername(username);
         return userConverter.ToDto(userService.update(userConverter.ToEntity(userDto)));
     }
 
     @RolesAllowed("Administrator")
     @DeleteMapping("/{username}")
-    public void deleteUserByUsername(@PathVariable String username) throws UserNotFoundException {
-        userService.deleteByUsername(username);
+    public void deleteUserByUsername(@PathVariable String username,
+                                     @CurrentUser UserPrincipal userPrincipal) throws UserNotFoundException {
+        userService.deleteByUsername(username, userPrincipal);
     }
 }

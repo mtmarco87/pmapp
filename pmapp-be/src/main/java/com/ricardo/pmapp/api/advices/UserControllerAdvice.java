@@ -2,6 +2,7 @@ package com.ricardo.pmapp.api.advices;
 
 import com.ricardo.pmapp.exceptions.UserCreationException;
 import com.ricardo.pmapp.exceptions.UserNotFoundException;
+import com.ricardo.pmapp.exceptions.UserUpdateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,14 @@ public class UserControllerAdvice {
     @ExceptionHandler(UserCreationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     String userCreationExceptionHandler(UserCreationException ex) {
+        logger.error(ex.getMessage(), ex);
+        return ex.getMessage();
+    }
+
+    @ResponseBody
+    @ExceptionHandler(UserUpdateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String userUpdateExceptionHandler(UserUpdateException ex) {
         logger.error(ex.getMessage(), ex);
         return ex.getMessage();
     }

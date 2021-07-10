@@ -2,8 +2,10 @@ package com.ricardo.pmapp.services;
 
 import com.ricardo.pmapp.exceptions.UserCreationException;
 import com.ricardo.pmapp.exceptions.UserNotFoundException;
+import com.ricardo.pmapp.exceptions.UserUpdateException;
 import com.ricardo.pmapp.persistence.models.entities.User;
 import com.ricardo.pmapp.persistence.models.enums.Role;
+import com.ricardo.pmapp.security.models.UserPrincipal;
 
 import java.util.List;
 
@@ -19,10 +21,12 @@ public interface UserServiceI {
 
     User getByEmail(String email) throws UserNotFoundException;
 
+    List<User> findAll();
+
     List<User> findByRole(Role role);
 
-    User update(User user) throws UserNotFoundException;
+    User update(User user) throws UserNotFoundException, UserUpdateException;
 
-    void deleteByUsername(String username) throws UserNotFoundException;
+    void deleteByUsername(String username, UserPrincipal userPrincipal) throws UserNotFoundException;
 
 }

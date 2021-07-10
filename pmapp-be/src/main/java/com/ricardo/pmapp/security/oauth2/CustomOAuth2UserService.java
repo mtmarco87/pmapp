@@ -3,6 +3,7 @@ package com.ricardo.pmapp.security.oauth2;
 import com.ricardo.pmapp.exceptions.OAuth2AuthenticationProcessingException;
 import com.ricardo.pmapp.exceptions.UserCreationException;
 import com.ricardo.pmapp.exceptions.UserNotFoundException;
+import com.ricardo.pmapp.exceptions.UserUpdateException;
 import com.ricardo.pmapp.persistence.models.entities.User;
 import com.ricardo.pmapp.security.models.UserPrincipal;
 import com.ricardo.pmapp.security.oauth2.models.OAuth2UserInfo;
@@ -52,7 +53,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
     }
 
-    private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) throws UserCreationException {
+    private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User)
+            throws UserCreationException, UserUpdateException {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(
                 oAuth2UserRequest.getClientRegistration().getRegistrationId(),
                 oAuth2User.getAttributes()
@@ -83,7 +85,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return userService.create(user);
     }
 
-    private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) throws UserNotFoundException {
+    private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo)
+            throws UserNotFoundException, UserUpdateException {
         setFirstAndLastName(existingUser, oAuth2UserInfo);
         return userService.update(existingUser);
     }
