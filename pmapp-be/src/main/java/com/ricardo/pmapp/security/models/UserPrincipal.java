@@ -54,6 +54,10 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     // Method invoked after login to create UserDetails to be stored in the Spring Security Context
     public static UserPrincipal create(User user) {
+        if(user == null){
+            return  null;
+        }
+
         // Set the Role into the Authorities, to filter APIs access by Roles
         List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" +
                 user.getRole().name()));

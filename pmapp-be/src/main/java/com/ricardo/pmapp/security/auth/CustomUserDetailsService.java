@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 import static com.ricardo.pmapp.exceptions.ExceptionMessages.USER_NOT_EXISTING;
 
 /**
- * Used by spring during the login process, to check the password and if the user is enabled, locked, etc.
- * and to return the logged UserDetails
+ * Custom UserDetailsService implementation
+ *
+ * The UserDetailsService is used by Spring Security during the login process, to check if the user is enabled,
+ * locked, and to get back the current user UserDetails
  */
 
 @Service

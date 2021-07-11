@@ -164,18 +164,23 @@ public class InitScript implements ApplicationListener<ContextRefreshedEvent> {
         task4.setDescription("Task4 test");
         task4.setProgress(99);
         task4.setStatus(TaskStatus.Completed);
-        task3.setProject(proj2);
+        task4.setProject(proj2);
 
         Task task5 = new Task();
         task5.setDeadline(formatter.parse("2023-01-01"));
         task5.setDescription("Task5 test");
         task5.setProgress(0);
         task5.setStatus(TaskStatus.New);
-        task3.setProject(proj1);
+        task5.setProject(proj1);
 
-        Task task6;
-        Task task7;
-        Task task8;
+        Task task6 = CloneTask(task2);
+        task6.setDescription("Task6 test");
+
+        Task task7 = CloneTask(task3);
+        task7.setDescription("Task7 test");
+
+        Task task8 = CloneTask(task5);
+        task8.setDescription("Task8 test");
 
         try {
             task1 = taskService.create(task1, admin);
@@ -183,10 +188,9 @@ public class InitScript implements ApplicationListener<ContextRefreshedEvent> {
             task3 = taskService.create(task3, admin);
             task4 = taskService.create(task4, admin);
             task5 = taskService.create(task5, admin);
-
-            task6 = taskService.create(CloneTask(task2), admin);
-            task7 = taskService.create(CloneTask(task3), admin);
-            task8 = taskService.create(CloneTask(task5), admin);
+            task6 = taskService.create(task6, admin);
+            task7 = taskService.create(task7, admin);
+            task8 = taskService.create(task8, admin);
         } catch (TaskCreationException e) {
             e.printStackTrace();
         }

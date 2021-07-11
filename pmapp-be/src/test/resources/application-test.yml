@@ -49,4 +49,4 @@ app:
     allowedCorsOrigins:
       - http://localhost:3000
   initscript:
-    enabled: true
+    enabled: false
