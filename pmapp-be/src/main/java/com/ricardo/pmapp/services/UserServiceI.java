@@ -30,6 +30,6 @@ public interface UserServiceI {
 
     User update(User user) throws UserNotFoundException, UserUpdateException;
 
-    void deleteByUsername(String username, UserPrincipal userPrincipal) throws UserNotFoundException, UserDeletionException;
+    void deleteByUsername(String username) throws UserNotFoundException, UserDeletionException;
 
 }

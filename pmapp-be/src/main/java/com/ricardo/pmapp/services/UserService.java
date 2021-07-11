@@ -5,7 +5,6 @@ import com.ricardo.pmapp.exceptions.*;
 import com.ricardo.pmapp.persistence.repositories.UserRepository;
 import com.ricardo.pmapp.persistence.models.entities.User;
 import com.ricardo.pmapp.persistence.models.enums.Role;
-import com.ricardo.pmapp.security.models.UserPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,14 +30,14 @@ public class UserService implements UserServiceI {
         if (user.getUsername() == null || StringUtils.isBlank(user.getUsername()) ||
                 user.getEmail() == null || StringUtils.isBlank(user.getEmail()) ||
                 user.getPassword() == null || StringUtils.isBlank(user.getPassword())) {
+            // Check for mandatory required fields
             throw new UserCreationException(ExceptionMessages.MISSING_MANDATORY_FIELDS_USER_CREATION);
-        }
-
-        if (!isPasswordValid(user.getPassword())) {
+        } else if (!isPasswordValid(user.getPassword())) {
+            // Check for strong valid password
             throw new UserCreationException(ExceptionMessages.INVALID_PASSWORD);
         }
 
-        Optional<User> existingUser = userRepository.findById(user.getEmail());
+        Optional<User> existingUser = userRepository.findById(user.getUsername());
         if (!existingUser.isPresent()) {
             // Encode password first and then store it
             user.setPassword(this.passwordEncoder.encode(user.getPassword()));
@@ -84,9 +83,13 @@ public class UserService implements UserServiceI {
         // Check that provided User exists first
         User existingUser = getByUsername(user.getUsername());
 
-        if (user.getPassword() != null && !StringUtils.isBlank(user.getPassword())) {
+        if (user.getEmail() == null || StringUtils.isBlank(user.getEmail())) {
+            // If null keep existing email
+            user.setEmail(existingUser.getEmail());
+        }
 
-            // Set new password
+        if (user.getPassword() != null && !StringUtils.isBlank(user.getPassword())) {
+            // Set new password if valid
             if (!isPasswordValid(user.getPassword())) {
                 throw new UserUpdateException(ExceptionMessages.INVALID_PASSWORD);
             }
@@ -103,7 +106,7 @@ public class UserService implements UserServiceI {
 
     @Transactional
     @Override
-    public void deleteByUsername(String username, UserPrincipal userPrincipal)
+    public void deleteByUsername(String username)
             throws UserNotFoundException, UserDeletionException {
         // Check that provided User exists first
         User existingUser = getByUsername(username);

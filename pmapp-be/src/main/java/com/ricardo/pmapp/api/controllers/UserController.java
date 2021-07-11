@@ -80,9 +80,8 @@ public class UserController {
 
     @RolesAllowed("Administrator")
     @DeleteMapping("/{username}")
-    public void deleteUserByUsername(@PathVariable String username,
-                                     @CurrentUser UserPrincipal userPrincipal)
+    public void deleteUserByUsername(@PathVariable String username)
             throws UserNotFoundException, UserDeletionException {
-        userService.deleteByUsername(username, userPrincipal);
+        userService.deleteByUsername(username);
     }
 }
