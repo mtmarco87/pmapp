@@ -1,10 +1,11 @@
 package com.ricardo.pmapp.persistence.models.entities;
 
-import com.ricardo.pmapp.persistence.models.enums.Role;
 import com.ricardo.pmapp.persistence.models.enums.TaskStatus;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.Date;
 
 /**
@@ -26,12 +27,18 @@ public class Task {
     @Column(nullable = false)
     private Long code;
 
-    @OneToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "assignee", referencedColumnName = "username")
+    @ManyToOne
+    @JoinColumn(name="assignee")
     private User assignee;
+
+    @ManyToOne
+    @JoinColumn(name="project")
+    private Project project;
 
     private String description;
 
+    @Min(0)
+    @Max(100)
     private int progress;
 
     @Enumerated(EnumType.STRING)

@@ -25,12 +25,13 @@ public interface TaskServiceI {
 
     List<Task> findNotAssigned();
 
+    List<Task> findByProject(Long code);
+
     Task update(Task task, UserPrincipal requester) throws TaskNotFoundException, TaskUpdateException;
 
-    void unassignByAssignee(String username, UserPrincipal requester);
+    void deleteByCode(Long code, UserPrincipal requester) throws TaskNotFoundException, TaskDeletionException;
 
-    void deleteByCode(Long code, UserPrincipal requester) throws TaskNotFoundException;
+    void deleteByAssignee(String username) throws TaskDeletionException;
 
-    void deleteByAssignee(String username, UserPrincipal requester) throws TaskDeletionException;
-
+    void deleteByProject(Long code, UserPrincipal requester) throws TaskDeletionException;
 }

@@ -1,10 +1,13 @@
 package com.ricardo.pmapp.api.controllers;
 
+import com.ricardo.pmapp.api.converters.UserConverter;
 import com.ricardo.pmapp.api.models.dtos.LoginResponseDto;
 import com.ricardo.pmapp.api.models.dtos.LoginRequestDto;
+import com.ricardo.pmapp.api.models.dtos.UserDto;
 import com.ricardo.pmapp.exceptions.ExceptionMessages;
 import com.ricardo.pmapp.exceptions.LoginException;
 import com.ricardo.pmapp.security.jwttoken.TokenProvider;
+import com.ricardo.pmapp.security.models.UserPrincipal;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,18 +29,21 @@ public class AuthController {
 
     private final HttpServletRequest httpServletRequest;
 
+    private final UserConverter userConverter;
+
     public AuthController(AuthenticationManager authenticationManager, TokenProvider tokenProvider,
-                          HttpServletRequest httpServletRequest) {
+                          HttpServletRequest httpServletRequest, UserConverter userConverter) {
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
         this.httpServletRequest = httpServletRequest;
+        this.userConverter = userConverter;
     }
 
     /**
-     * Login: Standard Email/Password login
+     * Username/Password login returning a JWT token for API access
      *
-     * @param loginRequestDto containing user email and password
-     * @return containing the Authentication token
+     * @param loginRequestDto containing username and password
+     * @return containing the JWT authentication token
      * @throws LoginException in case of unauthorized request or failure
      */
     @PostMapping("/login")
@@ -54,8 +60,9 @@ public class AuthController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = tokenProvider.createToken(authentication);
+        UserDto userDto = userConverter.ToDto((UserPrincipal) authentication.getPrincipal());
 
-        return ResponseEntity.ok(new LoginResponseDto(token));
+        return ResponseEntity.ok(new LoginResponseDto(token, userDto));
     }
 
     /**

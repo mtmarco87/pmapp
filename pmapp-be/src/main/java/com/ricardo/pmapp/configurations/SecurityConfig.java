@@ -34,7 +34,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * jsr250Enabled: you can secure with @RolesAllowed("ADMIN")
  * prePostEnabled: @PreAuthorize("isAnonymous()") or @PreAuthorize("hasRole('ROLE_USER')")
  * */
-@EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
+@EnableGlobalMethodSecurity(jsr250Enabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomUserDetailsService customUserDetailsService;
@@ -113,7 +113,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                 .authenticationEntryPoint(new RestAuthenticationEntryPoint())
                 .and()
-                // no auth endpoints
+                // free access endpoints
                 .authorizeRequests()
                 .antMatchers(
                         "/auth/**",

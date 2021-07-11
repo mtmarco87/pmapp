@@ -61,6 +61,12 @@ public class TaskController {
     }
 
     @RolesAllowed({"Administrator", "ProjectManager"})
+    @GetMapping("/findByProject/{code}")
+    public List<TaskDto> findTasksByProject(@PathVariable Long code) {
+        return taskService.findByProject(code).stream().map(taskConverter::ToDto).collect(Collectors.toList());
+    }
+
+    @RolesAllowed({"Administrator", "ProjectManager"})
     @PutMapping("/{code}")
     public TaskDto updateTaskByCode(@RequestBody TaskDto taskDto, @PathVariable Long code,
                                     @CurrentUser UserPrincipal userPrincipal)
@@ -72,14 +78,21 @@ public class TaskController {
     @RolesAllowed({"Administrator", "ProjectManager"})
     @DeleteMapping("/{code}")
     public void deleteTaskByCode(@PathVariable Long code,
-                                 @CurrentUser UserPrincipal userPrincipal) throws TaskNotFoundException {
+                                 @CurrentUser UserPrincipal userPrincipal)
+            throws TaskNotFoundException, TaskDeletionException {
         taskService.deleteByCode(code, userPrincipal);
     }
 
-    @RolesAllowed({"Administrator", "ProjectManager"})
+    @RolesAllowed("Administrator")
     @DeleteMapping("/deleteByAssignee/{username}")
-    public void deleteTaskByAssignee(@PathVariable String username,
+    public void deleteTasksByAssignee(@PathVariable String username) throws TaskDeletionException {
+        taskService.deleteByAssignee(username);
+    }
+
+    @RolesAllowed({"Administrator", "ProjectManager"})
+    @DeleteMapping("/deleteByProject/{code}")
+    public void deleteTasksByProject(@PathVariable Long code,
                                      @CurrentUser UserPrincipal userPrincipal) throws TaskDeletionException {
-        taskService.deleteByAssignee(username, userPrincipal);
+        taskService.deleteByProject(code, userPrincipal);
     }
 }

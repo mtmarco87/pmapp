@@ -1,6 +1,7 @@
 package com.ricardo.pmapp.api.controllers;
 
 import com.ricardo.pmapp.exceptions.UserCreationException;
+import com.ricardo.pmapp.exceptions.UserDeletionException;
 import com.ricardo.pmapp.exceptions.UserNotFoundException;
 import com.ricardo.pmapp.api.converters.UserConverter;
 import com.ricardo.pmapp.api.models.dtos.UserDto;
@@ -57,10 +58,16 @@ public class UserController {
         return userService.findAll().stream().map(userConverter::ToDto).collect(Collectors.toList());
     }
 
-    @RolesAllowed("Administrator")
+    @RolesAllowed({"Administrator", "ProjectManager"})
     @GetMapping("/findByRole/{role}")
     public List<UserDto> findUsersByRole(@PathVariable Role role) {
         return userService.findByRole(role).stream().map(userConverter::ToDto).collect(Collectors.toList());
+    }
+
+    @RolesAllowed("Administrator")
+    @GetMapping("/findByEmail/{email}")
+    public List<UserDto> findUsersByEmail(@PathVariable String email) {
+        return userService.findByEmail(email).stream().map(userConverter::ToDto).collect(Collectors.toList());
     }
 
     @RolesAllowed("Administrator")
@@ -74,7 +81,8 @@ public class UserController {
     @RolesAllowed("Administrator")
     @DeleteMapping("/{username}")
     public void deleteUserByUsername(@PathVariable String username,
-                                     @CurrentUser UserPrincipal userPrincipal) throws UserNotFoundException {
+                                     @CurrentUser UserPrincipal userPrincipal)
+            throws UserNotFoundException, UserDeletionException {
         userService.deleteByUsername(username, userPrincipal);
     }
 }

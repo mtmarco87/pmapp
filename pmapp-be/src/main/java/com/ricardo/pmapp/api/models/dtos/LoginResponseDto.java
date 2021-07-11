@@ -15,7 +15,10 @@ public class LoginResponseDto {
 
     private String tokenType = "Bearer";
 
-    public LoginResponseDto(String accessToken) {
+    private UserDto user;
+
+    public LoginResponseDto(String accessToken, UserDto userDto) {
         this.accessToken = accessToken;
+        this.user = userDto;
     }
 }

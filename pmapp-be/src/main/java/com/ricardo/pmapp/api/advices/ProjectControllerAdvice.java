@@ -1,53 +1,47 @@
 package com.ricardo.pmapp.api.advices;
 
-import com.ricardo.pmapp.exceptions.UserCreationException;
-import com.ricardo.pmapp.exceptions.UserDeletionException;
-import com.ricardo.pmapp.exceptions.UserNotFoundException;
-import com.ricardo.pmapp.exceptions.UserUpdateException;
+import com.ricardo.pmapp.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import static com.ricardo.pmapp.exceptions.ExceptionMessages.INTERNAL_SERVER_ERROR;
-
 @ControllerAdvice
-public class UserControllerAdvice {
+public class ProjectControllerAdvice {
 
-    Logger logger = LoggerFactory.getLogger(UserControllerAdvice.class);
+    Logger logger = LoggerFactory.getLogger(ProjectControllerAdvice.class);
 
     @ResponseBody
-    @ExceptionHandler(UserNotFoundException.class)
+    @ExceptionHandler(ProjectNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String userNotFoundHandler(UserNotFoundException ex) {
+    String projectNotFoundHandler(ProjectNotFoundException ex) {
         logger.error(ex.getMessage(), ex);
         return ex.getMessage();
     }
 
     @ResponseBody
-    @ExceptionHandler(UserCreationException.class)
+    @ExceptionHandler(ProjectCreationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String userCreationExceptionHandler(UserCreationException ex) {
+    String projectCreationExceptionHandler(ProjectCreationException ex) {
         logger.error(ex.getMessage(), ex);
         return ex.getMessage();
     }
 
     @ResponseBody
-    @ExceptionHandler(UserUpdateException.class)
+    @ExceptionHandler(ProjectUpdateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String userUpdateExceptionHandler(UserUpdateException ex) {
+    String projectUpdateExceptionHandler(ProjectUpdateException ex) {
         logger.error(ex.getMessage(), ex);
         return ex.getMessage();
     }
 
     @ResponseBody
-    @ExceptionHandler(UserDeletionException.class)
+    @ExceptionHandler(ProjectDeletionException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String userDeletionExceptionHandler(UserDeletionException ex) {
+    String projectDeletionExceptionHandler(ProjectDeletionException ex) {
         logger.error(ex.getMessage(), ex);
         return ex.getMessage();
     }

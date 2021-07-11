@@ -5,6 +5,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This entity represents an User
@@ -37,7 +39,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User(String username){
-        this.username = username;
-    }
+    @OneToMany(mappedBy="assignee")
+    private List<Task> tasks = new ArrayList<>();
+
+    @OneToMany(mappedBy="projectManager")
+    private List<Project> projects = new ArrayList<>();
 }
