@@ -56,8 +56,9 @@ logging:
               BasicBinder: TRACE
 app:
   auth:
-    tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
-    tokenExpirationMsec: 864000000
+    tokenSecret: 926D96C90030DE58429D2751AC1BDBBC
+    tokenExpirationMsec: 7200000        # 2 hours
+    refreshTokenExpirationMsec: 3600000  # 1 hour
   oauth2:
     authorizedRedirectUris:
       - http://localhost:3000/oauth2/redirect

@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from 'axios';
 import endpoints from "../constants/endpoints";
 import { LoginRequestDto } from "../models/dtos/LoginRequestDto";
 import { LoginResponseDto } from "../models/dtos/LoginResponseDto";
@@ -9,5 +9,8 @@ export const authService = {
     },
     Logout: (): Promise<AxiosResponse> => {
         return axios.post(endpoints.auth.logout);
+    },
+    RefreshToken: (): Promise<AxiosResponse<LoginResponseDto>> => {
+        return axios.post(endpoints.auth.refreshtoken);
     }
 };

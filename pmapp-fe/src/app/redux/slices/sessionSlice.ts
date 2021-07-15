@@ -52,14 +52,14 @@ export const SessionSlice = createSlice({
     setNotification: (state, action: PayloadAction<AppNotification | null>) => {
       state.notification = action.payload;
     },
+    setAccessToken: (state, action: PayloadAction<string | null>) => {
+      state.accessToken = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
       .addCase(loginAsync.rejected, (state) => {
-        state.accessToken = null;
-        state.user = null;
-        state.isAuthenticated = false;
-        state.sessionStatus = SessionStatus.None;
+        clearSession(state);
       })
       .addCase(loginAsync.fulfilled, (state, action) => {
         const response = action.payload;
@@ -73,22 +73,26 @@ export const SessionSlice = createSlice({
       .addCase(logoutAsync.fulfilled, (state, action) => {
         const responseStatus = action.payload;
         if (responseStatus === 200) {
-          state.accessToken = null;
-          state.user = null;
-          state.isAuthenticated = false;
-          state.sessionStatus = SessionStatus.None;
+          clearSession(state);
         }
       });
   },
 });
 
+const clearSession = (state: any, sessionStatus: SessionStatus = SessionStatus.None) => {
+  state.accessToken = null;
+  state.user = null;
+  state.isAuthenticated = false;
+  state.sessionStatus = sessionStatus;
+};
+
 // Actions
-export const { setSessionStatus, setNotification } = SessionSlice.actions;
+export const { setSessionStatus, setNotification, setAccessToken } = SessionSlice.actions;
 
 // Custom Thunks
 export const setStatus = (sessionStatus: SessionStatus, doLogout: boolean = false): AppThunk => (
-  dispatch,
-  getState
+  dispatch: any,
+  getState: any
 ) => {
   if (doLogout) {
     dispatch(logoutAsync()).then(() => dispatch(setSessionStatus(sessionStatus)));

@@ -4,6 +4,7 @@ const endpoints = {
     auth: {
         login: `${environment.baseUrl}/auth/login`,
         logout: `${environment.baseUrl}/auth/logout`,
+        refreshtoken: `${environment.baseUrl}/auth/refreshtoken`,
     },
     user: {
         findAll: `${environment.baseUrl}/user/all`,

@@ -25,6 +25,7 @@ public class AppConfig {
 
         private String tokenSecret;
         private long tokenExpirationMsec;
+        private long refreshTokenExpirationMsec;
     }
 
     @Getter

@@ -17,6 +17,10 @@ public class LoginResponseDto {
 
     private UserDto user;
 
+    public LoginResponseDto(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
     public LoginResponseDto(String accessToken, UserDto userDto) {
         this.accessToken = accessToken;
         this.user = userDto;

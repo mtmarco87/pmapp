@@ -48,13 +48,14 @@ export default function Tasks() {
             const allProjects = (responses[1] as AxiosResponse<ProjectDto[]>)?.data;
             setUsers(allUsers);
             setProjects(allProjects);
+
+            loadUserTasks();
         }));
-    }, []);
+    }, [loadUserTasks]);
 
     useEffect(() => {
         loadUsersAndProjects();
-        loadUserTasks();
-    }, [loadUsersAndProjects, loadUserTasks])
+    }, [loadUsersAndProjects])
 
     const deleteTask = (code: number) => {
         taskService.DeleteByCode(code)

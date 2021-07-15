@@ -45,7 +45,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt, request, response)) {
                 UserToken userFromToken = tokenProvider.getUserFromToken(jwt);
                 User userFromDb = userService.getByUsername(userFromToken.getUsername());
 

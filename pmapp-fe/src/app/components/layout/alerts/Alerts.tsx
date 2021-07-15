@@ -1,5 +1,5 @@
 import { Snackbar } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
+import { Alert } from "@material-ui/core";
 import { SessionStatus } from "../../../models/core/SessionStatus";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { selectNotification, selectSessionStatus, setNotification, setStatus } from "../../../redux/slices/sessionSlice";

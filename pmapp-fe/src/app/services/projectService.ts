@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from 'axios';
 import endpoints from "../constants/endpoints";
 import { ProjectDto } from "../models/dtos/ProjectDto";
 

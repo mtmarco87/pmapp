@@ -16,11 +16,11 @@ import { userService } from '../../../services/userService';
 
 export default function Projects() {
     const classes = useProjectsStyles();
+    const history = useHistory();
     const [projects, setProjects] = useState<ProjectDto[]>([]);
     const [users, setUsers] = useState<UserDto[]>([]);
-    const dispatch = useAppDispatch();
-    const history = useHistory();
     const userRole = useAppSelector(selectLoggedUser)?.role;
+    const dispatch = useAppDispatch();
 
     const loadProjects = useCallback(() => {
         let projectsRetrieveFn: Promise<AxiosResponse<ProjectDto[]>>;
@@ -32,7 +32,7 @@ export default function Projects() {
         }
 
         projectsRetrieveFn.then((response) => {
-            const projectsWithIds = response?.data?.map(proj => ({id: proj.code, ...proj}));
+            const projectsWithIds = response?.data?.map(proj => ({ id: proj.code, ...proj }));
             setProjects(projectsWithIds);
         });
     }, [userRole]);
@@ -40,13 +40,14 @@ export default function Projects() {
     const loadUsers = useCallback(() => {
         userService.FindAll().then((response) => {
             setUsers(response?.data);
+
+            loadProjects();
         });
-    }, []);
-    
+    }, [loadProjects]);
+
     useEffect(() => {
         loadUsers();
-        loadProjects();
-    }, [loadUsers, loadProjects]);
+    }, [loadUsers]);
 
     const deleteProject = (code: number) => {
         projectService.DeleteByCode(code)
@@ -73,6 +74,7 @@ export default function Projects() {
     //       }
     //     },
     //     [rows],
+
     //   );
 
     return (

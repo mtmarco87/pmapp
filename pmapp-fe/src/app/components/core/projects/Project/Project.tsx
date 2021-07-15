@@ -49,13 +49,14 @@ export default function Project() {
             setUsers(allUsers?.data);
             setProjects(allProjects?.data);
             setProject(currProject ?? null);
+
+            loadProjectTasks();
         }));
     }, [code]);
 
     useEffect(() => {
         loadUsersAndProjects();
-        loadProjectTasks();
-    }, [loadUsersAndProjects, loadProjectTasks])
+    }, [loadUsersAndProjects])
 
     if (redirect) {
         return <Redirect to={{ pathname: '/' }} />;

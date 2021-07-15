@@ -40,8 +40,9 @@ spring:
             userInfoUri: https://graph.facebook.com/v3.0/me?fields=id,first_name,middle_name,last_name,name,email,verified,is_verified,picture.width(250).height(250)
 app:
   auth:
-    tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
-    tokenExpirationMsec: 864000000
+    tokenSecret: 926D96C90030DE58429D2751AC1BDBBC
+    tokenExpirationMsec: 7200000        # 2 hours
+    refreshTokenExpirationMsec: 3600000  # 1 hour
   oauth2:
     authorizedRedirectUris:
       - http://localhost:3000/oauth2/redirect
