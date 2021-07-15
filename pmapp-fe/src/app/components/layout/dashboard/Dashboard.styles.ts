@@ -1,9 +1,10 @@
 
-import { makeStyles } from "@material-ui/core";
+import { Theme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/styles";
 
 const drawerWidth = 240;
 
-const useDashboardStyles = makeStyles((theme) => ({
+const useDashboardStyles = makeStyles((theme: Theme) => ({
     root: {
         display: 'flex',
     },
@@ -70,7 +71,10 @@ const useDashboardStyles = makeStyles((theme) => ({
     container: {
         paddingTop: theme.spacing(4),
         paddingBottom: theme.spacing(4),
+        paddingLeft: 35,
+        paddingRight: 35,
         height: '90%',
+        maxWidth: '100%',
     }
 }));
 

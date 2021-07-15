@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Redirect, useLocation } from "react-router-dom";
 import { FromLocationState } from "../../../models/core/FromLocationState";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
@@ -22,12 +22,12 @@ export default function Login() {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
-    const login = () => {
+    const login = useCallback(() => {
         dispatch(loginAsync({
             username,
             password
         }));
-    };
+    }, [dispatch, username, password]);
 
     if (isAuthenticated) {
         return <Redirect to={from ?? { pathname: '/' }} />;

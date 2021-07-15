@@ -1,7 +1,7 @@
 import { Theme } from "@material-ui/core/styles";
 import { makeStyles } from "@material-ui/styles";
 
-const useProjectsStyles = makeStyles((theme: Theme) => ({
+const useProjectStyles = makeStyles((theme: Theme) => ({
     paper: {
         padding: theme.spacing(2),
         display: 'flex',
@@ -19,4 +19,4 @@ const useProjectsStyles = makeStyles((theme: Theme) => ({
     }
 }));
 
-export default useProjectsStyles;
+export default useProjectStyles;

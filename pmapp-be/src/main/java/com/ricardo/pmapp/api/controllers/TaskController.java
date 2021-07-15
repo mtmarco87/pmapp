@@ -6,6 +6,7 @@ import com.ricardo.pmapp.exceptions.*;
 import com.ricardo.pmapp.security.auth.CurrentUser;
 import com.ricardo.pmapp.security.models.UserPrincipal;
 import com.ricardo.pmapp.services.TaskServiceI;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -27,8 +28,8 @@ public class TaskController {
 
     @RolesAllowed({"Administrator", "ProjectManager"})
     @PostMapping()
-    public TaskDto createTask(@RequestBody TaskDto taskDto,
-                              @CurrentUser UserPrincipal userPrincipal) throws TaskCreationException {
+    public TaskDto createTask(@RequestBody TaskDto taskDto, @CurrentUser UserPrincipal userPrincipal)
+            throws TaskCreationException, AccessDeniedException {
         return taskConverter.ToDto(taskService.create(taskConverter.ToEntity(taskDto), userPrincipal));
     }
 
@@ -70,16 +71,15 @@ public class TaskController {
     @PutMapping("/{code}")
     public TaskDto updateTaskByCode(@RequestBody TaskDto taskDto, @PathVariable Long code,
                                     @CurrentUser UserPrincipal userPrincipal)
-            throws TaskNotFoundException, TaskUpdateException {
+            throws TaskNotFoundException, TaskUpdateException, AccessDeniedException {
         taskDto.setCode(code);
         return taskConverter.ToDto(taskService.update(taskConverter.ToEntity(taskDto), userPrincipal));
     }
 
     @RolesAllowed({"Administrator", "ProjectManager"})
     @DeleteMapping("/{code}")
-    public void deleteTaskByCode(@PathVariable Long code,
-                                 @CurrentUser UserPrincipal userPrincipal)
-            throws TaskNotFoundException, TaskDeletionException {
+    public void deleteTaskByCode(@PathVariable Long code, @CurrentUser UserPrincipal userPrincipal)
+            throws TaskNotFoundException, TaskDeletionException, AccessDeniedException {
         taskService.deleteByCode(code, userPrincipal);
     }
 
@@ -91,8 +91,8 @@ public class TaskController {
 
     @RolesAllowed({"Administrator", "ProjectManager"})
     @DeleteMapping("/deleteByProject/{code}")
-    public void deleteTasksByProject(@PathVariable Long code,
-                                     @CurrentUser UserPrincipal userPrincipal) throws TaskDeletionException {
+    public void deleteTasksByProject(@PathVariable Long code, @CurrentUser UserPrincipal userPrincipal)
+            throws TaskDeletionException, AccessDeniedException {
         taskService.deleteByProject(code, userPrincipal);
     }
 }

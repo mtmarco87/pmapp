@@ -1,61 +1,88 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Grid, Paper } from '@material-ui/core';
 import useProjectsStyles from './Projects.styles';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@material-ui/data-grid';
+import { DataGrid, GridEditCellPropsParams } from '@material-ui/data-grid';
+import { projectService } from '../../../services/projectService';
+import { ProjectDto } from '../../../models/dtos/ProjectDto';
+import { getProjectsColumnsDefs } from './getProjectsColumnsDef';
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+import { selectLoggedUser, setNotification } from '../../../redux/slices/sessionSlice';
+import { useHistory } from 'react-router';
+import { Role } from '../../../models/dtos/Role';
+import { AxiosResponse } from 'axios';
+import { UserDto } from '../../../models/dtos/UserDto';
+import { userService } from '../../../services/userService';
 
-
-const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', width: 90 },
-    {
-        field: 'firstName',
-        headerName: 'First name',
-        width: 150,
-        editable: true,
-    },
-    {
-        field: 'lastName',
-        headerName: 'Last name',
-        width: 150,
-        editable: true,
-    },
-    {
-        field: 'age',
-        headerName: 'Age',
-        type: 'number',
-        width: 110,
-        editable: true,
-    },
-    {
-        field: 'fullName',
-        headerName: 'Full name',
-        description: 'This column has a value getter and is not sortable.',
-        sortable: false,
-        width: 160,
-        valueGetter: (params: GridValueGetterParams) =>
-            `${params.getValue(params.id, 'firstName') || ''} ${params.getValue(params.id, 'lastName') || ''
-            }`,
-    },
-];
-
-const rows = [
-    { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-    { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-    { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-    { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-    { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-    { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-    { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-    { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-    { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-];
 
 export default function Projects() {
     const classes = useProjectsStyles();
+    const [projects, setProjects] = useState<ProjectDto[]>([]);
+    const [users, setUsers] = useState<UserDto[]>([]);
+    const dispatch = useAppDispatch();
+    const history = useHistory();
+    const userRole = useAppSelector(selectLoggedUser)?.role;
+
+    const loadProjects = useCallback(() => {
+        let projectsRetrieveFn: Promise<AxiosResponse<ProjectDto[]>>;
+        if (userRole === Role.Administrator) {
+            projectsRetrieveFn = projectService.FindAll();
+        }
+        else {
+            projectsRetrieveFn = projectService.Me();
+        }
+
+        projectsRetrieveFn.then((response) => {
+            const projectsWithIds = response?.data?.map(proj => ({id: proj.code, ...proj}));
+            setProjects(projectsWithIds);
+        });
+    }, [userRole]);
+
+    const loadUsers = useCallback(() => {
+        userService.FindAll().then((response) => {
+            setUsers(response?.data);
+        });
+    }, []);
     
+    useEffect(() => {
+        loadUsers();
+        loadProjects();
+    }, [loadUsers, loadProjects]);
+
+    const deleteProject = (code: number) => {
+        projectService.DeleteByCode(code)
+            .then(() => {
+                loadProjects();
+                dispatch(setNotification({
+                    message: 'Project ' + code + ' has been successfully deleted!',
+                    type: 'success'
+                }));
+            });
+    };
+
+    // const handleEditCellChangeCommitted = useCallback(
+    //     ({ id, field, props }: GridEditCellPropsParams) => {
+    //       if (field === 'projectManager') {
+    //         const [firstName, lastName] = props.value!.toString().split(' ');
+    //         const updatedRows = rows.map((row) => {
+    //           if (row.id === id) {
+    //             return { ...row, firstName, lastName };
+    //           }
+    //           return row;
+    //         });
+    //         setRows(updatedRows);
+    //       }
+    //     },
+    //     [rows],
+    //   );
+
     return (
         <>
             <h1>Projects</h1>
-            <span>Here you will find the list of your projects.</span>
+            {userRole === Role.Administrator ?
+                <span>Here you will find the list of all projects.</span>
+                :
+                <span>Here you will find the list of your projects.</span>
+            }
             <br />
             <br />
 
@@ -63,14 +90,14 @@ export default function Projects() {
                 {/* Chart */}
                 <Grid item xs={12} md={12} lg={12}>
                     <Paper className={classes.paper}>
-                        <div style={{ height: 400, width: '100%' }}>
+                        <div style={{ height: 500, minHeight: 500, width: '100%' }}>
                             <DataGrid
-                                rows={rows}
-                                columns={columns}
-                                pageSize={5}
-                                checkboxSelection
+                                rows={projects}
+                                columns={getProjectsColumnsDefs({ classes, deleteProject, history, users })}
+                                autoPageSize={true}
                                 disableSelectionOnClick
-                            />
+                                loading={!projects || !users}
+                            ></DataGrid>
                         </div>
                     </Paper>
                 </Grid>

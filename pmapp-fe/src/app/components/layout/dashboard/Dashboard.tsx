@@ -76,7 +76,7 @@ export default function Dashboard() {
                 </List>
                 <Divider />
                 <List>
-                    <BottomMenuItems loggedUser={loggedUser} />
+                    <BottomMenuItems isAuthenticated={isAuthenticated} loggedUser={loggedUser} />
                 </List>
             </Drawer>
 

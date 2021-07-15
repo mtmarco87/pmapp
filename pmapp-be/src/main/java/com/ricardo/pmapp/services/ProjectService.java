@@ -5,6 +5,7 @@ import com.ricardo.pmapp.persistence.models.entities.Project;
 import com.ricardo.pmapp.persistence.repositories.ProjectRepository;
 import com.ricardo.pmapp.persistence.repositories.UserRepository;
 import com.ricardo.pmapp.security.models.UserPrincipal;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -43,10 +44,18 @@ public class ProjectService implements ProjectServiceI {
     }
 
     @Override
-    public Project getByCode(Long code) throws ProjectNotFoundException {
-        return projectRepository.findById(code)
+    public Project getByCode(Long code, UserPrincipal requester) throws ProjectNotFoundException, AccessDeniedException {
+        Project project = projectRepository.findById(code)
                 .orElseThrow(() -> new ProjectNotFoundException(String.format(ExceptionMessages.PROJECT_NOT_EXISTING,
                         code)));
+
+        if (!canModifyProject(project, requester)) {
+            // Check that user has rights to modify/access requested Project
+            throw new AccessDeniedException(String.format(ExceptionMessages.FORBIDDEN_PROJECT,
+                    project.getName()));
+        }
+
+        return project;
     }
 
     @Override
@@ -73,9 +82,9 @@ public class ProjectService implements ProjectServiceI {
 
     @Override
     @Transactional
-    public Project update(Project project, UserPrincipal requester) throws ProjectNotFoundException, ProjectUpdateException {
+    public Project update(Project project, UserPrincipal requester) throws ProjectNotFoundException, ProjectUpdateException, AccessDeniedException {
         // Check that provided Project exists first
-        Project existingProject = getByCode(project.getCode());
+        Project existingProject = getByCode(project.getCode(), requester);
 
         if (project.getProjectManager() == null || project.getProjectManager().getUsername() == null) {
             // A Project Manager should be provided on Project update
@@ -84,9 +93,10 @@ public class ProjectService implements ProjectServiceI {
             // The Project Manager should exist
             throw new ProjectUpdateException(String.format(ExceptionMessages.PROJECT_MANAGER_NOT_EXISTING,
                     project.getProjectManager().getUsername()));
-        } else if (!canModifyProject(project, requester)) {
+        } else if (!canModifyProject(existingProject, requester) ||
+                !canModifyProject(project, requester)) {
             // Check that user has rights to modify provided Project
-            throw new ProjectUpdateException(String.format(ExceptionMessages.FORBIDDEN_PROJECT,
+            throw new AccessDeniedException(String.format(ExceptionMessages.FORBIDDEN_PROJECT,
                     project.getName()));
         }
 
@@ -100,13 +110,13 @@ public class ProjectService implements ProjectServiceI {
     @Transactional
     @Override
     public void deleteByCode(Long code, UserPrincipal requester)
-            throws ProjectNotFoundException, ProjectDeletionException {
+            throws ProjectNotFoundException, ProjectDeletionException, AccessDeniedException {
         // Check that provided Project exists first
-        Project existingProject = getByCode(code);
+        Project existingProject = getByCode(code, requester);
 
         // Check that user has rights to modify provided Project
         if (!canModifyProject(existingProject, requester)) {
-            throw new ProjectDeletionException(String.format(ExceptionMessages.FORBIDDEN_PROJECT,
+            throw new AccessDeniedException(String.format(ExceptionMessages.FORBIDDEN_PROJECT,
                     existingProject.getName()));
         }
 
@@ -118,12 +128,8 @@ public class ProjectService implements ProjectServiceI {
     public void deleteByProjectManager(String username) throws ProjectDeletionException {
         List<Project> projectsByProjectManager = findByProjectManager(username);
 
-        try {
-            for (Project project : projectsByProjectManager) {
-                clearAndDeleteProject(project);
-            }
-        } catch (Exception ex) {
-            throw new ProjectDeletionException(ExceptionMessages.INTERNAL_SERVER_ERROR);
+        for (Project project : projectsByProjectManager) {
+            clearAndDeleteProject(project);
         }
     }
 

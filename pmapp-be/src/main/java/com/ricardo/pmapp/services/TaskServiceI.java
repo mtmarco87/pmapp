@@ -2,10 +2,8 @@ package com.ricardo.pmapp.services;
 
 import com.ricardo.pmapp.exceptions.*;
 import com.ricardo.pmapp.persistence.models.entities.Task;
-import com.ricardo.pmapp.persistence.models.entities.User;
-import com.ricardo.pmapp.persistence.models.enums.Role;
-import com.ricardo.pmapp.persistence.models.enums.TaskStatus;
 import com.ricardo.pmapp.security.models.UserPrincipal;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
 
@@ -15,7 +13,7 @@ import java.util.List;
 
 public interface TaskServiceI {
 
-    Task create(Task task, UserPrincipal requester) throws TaskCreationException;
+    Task create(Task task, UserPrincipal requester) throws TaskCreationException, AccessDeniedException;
 
     Task getByCode(Long code) throws TaskNotFoundException;
 
@@ -27,11 +25,11 @@ public interface TaskServiceI {
 
     List<Task> findByProject(Long code);
 
-    Task update(Task task, UserPrincipal requester) throws TaskNotFoundException, TaskUpdateException;
+    Task update(Task task, UserPrincipal requester) throws TaskNotFoundException, TaskUpdateException, AccessDeniedException;
 
-    void deleteByCode(Long code, UserPrincipal requester) throws TaskNotFoundException, TaskDeletionException;
+    void deleteByCode(Long code, UserPrincipal requester) throws TaskNotFoundException, TaskDeletionException, AccessDeniedException;
 
     void deleteByAssignee(String username) throws TaskDeletionException;
 
-    void deleteByProject(Long code, UserPrincipal requester) throws TaskDeletionException;
+    void deleteByProject(Long code, UserPrincipal requester) throws TaskDeletionException, AccessDeniedException;
 }

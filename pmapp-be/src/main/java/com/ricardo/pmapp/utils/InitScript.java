@@ -16,6 +16,7 @@ import com.ricardo.pmapp.services.TaskServiceI;
 import com.ricardo.pmapp.services.UserServiceI;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
@@ -191,7 +192,7 @@ public class InitScript implements ApplicationListener<ContextRefreshedEvent> {
             task6 = taskService.create(task6, admin);
             task7 = taskService.create(task7, admin);
             task8 = taskService.create(task8, admin);
-        } catch (TaskCreationException e) {
+        } catch (TaskCreationException | AccessDeniedException e) {
             e.printStackTrace();
         }
     }

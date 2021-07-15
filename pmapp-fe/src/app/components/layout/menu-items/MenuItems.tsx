@@ -48,7 +48,7 @@ export const UpperMenuItems = ({ isAuthenticated, loggedUser }: { isAuthenticate
   );
 };
 
-export const BottomMenuItems = ({ loggedUser }: { loggedUser: UserDto | null | undefined }) => {
+export const BottomMenuItems = ({ isAuthenticated, loggedUser }: { isAuthenticated: boolean, loggedUser: UserDto | null | undefined }) => {
   return (
     <div>
       <ListItem button component={Link} to="/">
@@ -57,31 +57,35 @@ export const BottomMenuItems = ({ loggedUser }: { loggedUser: UserDto | null | u
         </ListItemIcon>
         <ListItemText primary="Home" />
       </ListItem>
-      {loggedUser?.role === Role.Administrator || loggedUser?.role === Role.ProjectManager ?
-        <ListItem button component={Link} to="/projects">
-          <ListItemIcon>
-            <AssignmentIcon />
-          </ListItemIcon>
-          <ListItemText primary="Projects" />
-        </ListItem>
-        :
-        <></>
-      }
-      <ListItem button component={Link} to="/tasks">
-        <ListItemIcon>
-          <FormatListNumberedIcon />
-        </ListItemIcon>
-        <ListItemText primary="Tasks" />
-      </ListItem>
-      {loggedUser?.role === Role.Administrator ?
-        <ListItem button component={Link} to="/users">
-          <ListItemIcon>
-            <PeopleIcon />
-          </ListItemIcon>
-          <ListItemText primary="Users" />
-        </ListItem>
-        :
-        <></>
+      {isAuthenticated &&
+        <>
+          {loggedUser?.role === Role.Administrator || loggedUser?.role === Role.ProjectManager ?
+            <ListItem button component={Link} to="/projects">
+              <ListItemIcon>
+                <AssignmentIcon />
+              </ListItemIcon>
+              <ListItemText primary="Projects" />
+            </ListItem>
+            :
+            <></>
+          }
+          <ListItem button component={Link} to="/tasks">
+            <ListItemIcon>
+              <FormatListNumberedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Tasks" />
+          </ListItem>
+          {loggedUser?.role === Role.Administrator ?
+            <ListItem button component={Link} to="/users">
+              <ListItemIcon>
+                <PeopleIcon />
+              </ListItemIcon>
+              <ListItemText primary="Users" />
+            </ListItem>
+            :
+            <></>
+          }
+        </>
       }
     </div>
   );

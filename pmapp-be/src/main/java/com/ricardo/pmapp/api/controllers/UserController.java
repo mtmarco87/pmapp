@@ -52,7 +52,6 @@ public class UserController {
         return userConverter.ToDto(userService.getByEmail(email));
     }
 
-    @RolesAllowed("Administrator")
     @GetMapping("/all")
     public List<UserDto> findAllUsers() {
         return userService.findAll().stream().map(userConverter::ToDto).collect(Collectors.toList());

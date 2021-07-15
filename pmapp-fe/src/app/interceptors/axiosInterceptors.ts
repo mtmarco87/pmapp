@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { SessionStatus } from '../models/core/SessionStatus';
-import { setStatus } from '../redux/slices/sessionSlice';
+import { setNotification, setStatus } from '../redux/slices/sessionSlice';
 import { store as AppStore } from '../redux/store';
+import { getErrorMessage } from '../utils/Utils';
 
 export default function setupAxiosInterceptors(store: typeof AppStore): void {
     // Request interceptor for API calls
@@ -37,6 +38,11 @@ export default function setupAxiosInterceptors(store: typeof AppStore): void {
                 // In case of 403 (Forbidden) user tried to access resources forbidden to its role
                 // so we dispatch an action to the store to just show an error message
                 store.dispatch(setStatus(SessionStatus.Forbidden));
+            } else {
+                store.dispatch(setNotification({
+                    message: getErrorMessage(error),
+                    type: 'error'
+                }));
             }
 
             return Promise.reject(error);

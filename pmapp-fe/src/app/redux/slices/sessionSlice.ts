@@ -4,12 +4,14 @@ import { LoginRequestDto } from '../../models/dtos/LoginRequestDto';
 import { authService } from '../../services/authService';
 import { SessionStatus } from '../../models/core/SessionStatus';
 import { UserDto } from '../../models/dtos/UserDto';
+import { AppNotification } from '../../models/core/AppNotification';
 
 export interface SessionState {
   accessToken?: string | null;
   user?: UserDto | null;
   isAuthenticated: boolean;
   sessionStatus: SessionStatus;
+  notification: AppNotification | null;
 }
 
 const initialState: SessionState = {
@@ -17,6 +19,7 @@ const initialState: SessionState = {
   user: null,
   isAuthenticated: false,
   sessionStatus: SessionStatus.None,
+  notification: null
 };
 
 // Async thunks
@@ -45,7 +48,10 @@ export const SessionSlice = createSlice({
   reducers: {
     setSessionStatus: (state, action: PayloadAction<SessionStatus>) => {
       state.sessionStatus = action.payload;
-    }
+    },
+    setNotification: (state, action: PayloadAction<AppNotification | null>) => {
+      state.notification = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -58,7 +64,6 @@ export const SessionSlice = createSlice({
       .addCase(loginAsync.fulfilled, (state, action) => {
         const response = action.payload;
         if (response.status === 200 && response.data !== null) {
-          console.log(response.data);
           state.accessToken = response.data.accessToken;
           state.user = response.data.user;
           state.isAuthenticated = true;
@@ -78,7 +83,7 @@ export const SessionSlice = createSlice({
 });
 
 // Actions
-export const { setSessionStatus } = SessionSlice.actions;
+export const { setSessionStatus, setNotification } = SessionSlice.actions;
 
 // Custom Thunks
 export const setStatus = (sessionStatus: SessionStatus, doLogout: boolean = false): AppThunk => (
@@ -101,6 +106,8 @@ export const selectAccessToken = (state: RootState) => state.session.accessToken
 export const selectIsAuthenticated = (state: RootState) => state.session.isAuthenticated;
 
 export const selectSessionStatus = (state: RootState) => state.session.sessionStatus;
+
+export const selectNotification = (state: RootState) => state.session.notification;
 
 
 export default SessionSlice.reducer;

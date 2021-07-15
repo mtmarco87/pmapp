@@ -6,6 +6,7 @@ import com.ricardo.pmapp.exceptions.*;
 import com.ricardo.pmapp.security.auth.CurrentUser;
 import com.ricardo.pmapp.security.models.UserPrincipal;
 import com.ricardo.pmapp.services.ProjectServiceI;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -31,10 +32,11 @@ public class ProjectController {
         return projectConverter.ToDto(projectService.create(projectConverter.ToEntity(projectDto)));
     }
 
-    @RolesAllowed("Administrator")
+    @RolesAllowed({"Administrator", "ProjectManager"})
     @GetMapping("/{code}")
-    public ProjectDto getProjectByCode(@PathVariable Long code) throws ProjectNotFoundException {
-        return projectConverter.ToDto(projectService.getByCode(code));
+    public ProjectDto getProjectByCode(@PathVariable Long code, @CurrentUser UserPrincipal userPrincipal)
+            throws ProjectNotFoundException, AccessDeniedException {
+        return projectConverter.ToDto(projectService.getByCode(code, userPrincipal));
     }
 
     @RolesAllowed("Administrator")
@@ -43,7 +45,6 @@ public class ProjectController {
         return projectConverter.ToDto(projectService.getByName(name));
     }
 
-    @RolesAllowed("Administrator")
     @GetMapping("/all")
     public List<ProjectDto> findAllProjects() {
         return projectService.findAll().stream().map(projectConverter::ToDto).collect(Collectors.toList());
@@ -74,16 +75,15 @@ public class ProjectController {
     @PutMapping("/{code}")
     public ProjectDto updateProjectByCode(@RequestBody ProjectDto projectDto, @PathVariable Long code,
                                           @CurrentUser UserPrincipal userPrincipal)
-            throws ProjectNotFoundException, ProjectUpdateException {
+            throws ProjectNotFoundException, ProjectUpdateException, AccessDeniedException {
         projectDto.setCode(code);
         return projectConverter.ToDto(projectService.update(projectConverter.ToEntity(projectDto), userPrincipal));
     }
 
     @RolesAllowed({"Administrator", "ProjectManager"})
     @DeleteMapping("/{code}")
-    public void deleteProjectByCode(@PathVariable Long code,
-                                    @CurrentUser UserPrincipal userPrincipal)
-            throws ProjectNotFoundException, ProjectDeletionException {
+    public void deleteProjectByCode(@PathVariable Long code, @CurrentUser UserPrincipal userPrincipal)
+            throws ProjectNotFoundException, ProjectDeletionException, AccessDeniedException {
         projectService.deleteByCode(code, userPrincipal);
     }
 
