@@ -10,7 +10,7 @@ import { selectLoggedUser, setNotification } from '../../../../redux/slices/sess
 import { Redirect, useParams } from 'react-router';
 import { taskService } from '../../../../services/taskService';
 import { TaskDto } from '../../../../models/dtos/TaskDto';
-import { isNotFound } from '../../../../utils/Utils';
+import { handleCellEditWithDbUpdate, isNotFound } from '../../../../utils/Utils';
 import axios, { AxiosResponse } from 'axios';
 import { userService } from '../../../../services/userService';
 import { UserDto } from '../../../../models/dtos/UserDto';
@@ -26,6 +26,7 @@ export default function Project() {
     const [redirect, setRedirect] = useState<boolean>(false);
     const userRole = useAppSelector(selectLoggedUser)?.role;
     const dispatch = useAppDispatch();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const loadProjectTasks = useCallback(() => {
         taskService.FindByProject(+code).then((response) => {
@@ -35,10 +36,12 @@ export default function Project() {
             if (isNotFound(error)) {
                 setRedirect(true);
             }
-        });
+        }).finally(() => setLoading(false));
     }, [code]);
 
     const loadUsersAndProjects = useCallback(() => {
+        setLoading(true);
+
         axios.all<AxiosResponse<any>>([
             userService.FindAll(),
             projectService.FindAll(),
@@ -52,17 +55,13 @@ export default function Project() {
 
             loadProjectTasks();
         }));
-    }, [code]);
+    }, [code, loadProjectTasks]);
 
     useEffect(() => {
         loadUsersAndProjects();
     }, [loadUsersAndProjects])
 
-    if (redirect) {
-        return <Redirect to={{ pathname: '/' }} />;
-    }
-
-    const deleteTask = (code: number) => {
+    const deleteTask = useCallback((code: number) => {
         taskService.DeleteByCode(code)
             .then(() => {
                 loadProjectTasks();
@@ -71,7 +70,23 @@ export default function Project() {
                     type: 'success'
                 }));
             });
-    };
+    }, [loadProjectTasks, dispatch]);
+
+    // eslint-disable-next-line
+    const handleEditCellChangeCommitted = useCallback(
+        handleCellEditWithDbUpdate<TaskDto>(
+            tasks,
+            setTasks,
+            'code',
+            taskService.Update,
+            dispatch,
+            () => loadProjectTasks(),
+            'Task %s has been successfully updated!'
+        ), [tasks, loadProjectTasks]);
+
+    if (redirect) {
+        return <Redirect to={{ pathname: '/' }} />;
+    }
 
     return (
         <>
@@ -95,9 +110,15 @@ export default function Project() {
                                 columns={getTasksColumnsDefs({
                                     classes, deleteTask, userRole, users, projects
                                 })}
-                                autoPageSize={true}
                                 disableSelectionOnClick
-                                loading={!tasks || !projects || !users}
+                                onEditCellChangeCommitted={handleEditCellChangeCommitted}
+                                sortModel={[
+                                    {
+                                        field: 'code',
+                                        sort: 'asc'
+                                    },
+                                ]}
+                                loading={loading}
                             />
                         </div>
                     </Paper>

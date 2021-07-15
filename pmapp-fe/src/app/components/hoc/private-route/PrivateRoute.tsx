@@ -3,7 +3,7 @@ import { Redirect, Route, useLocation } from "react-router-dom";
 import { CurrentLocationState } from "../../../models/core/CurrentLocationState";
 import { SessionStatus } from "../../../models/core/SessionStatus";
 import { useAppSelector } from "../../../redux/hooks";
-import { selectIsAuthenticated, selectSessionStatus, setStatus } from "../../../redux/slices/sessionSlice";
+import { selectIsAuthenticated, selectSessionStatus } from "../../../redux/slices/sessionSlice";
 
 const PrivateRoute = ({ Component, ...rest }: { Component: Function, [restKey: string]: any }) => {
     const location = useLocation<CurrentLocationState>();

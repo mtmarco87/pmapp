@@ -12,6 +12,7 @@ import { projectService } from '../../../services/projectService';
 import { userService } from '../../../services/userService';
 import { ProjectDto } from '../../../models/dtos/ProjectDto';
 import { UserDto } from '../../../models/dtos/UserDto';
+import { handleCellEditWithDbUpdate } from '../../../utils/Utils';
 
 
 export default function Tasks() {
@@ -21,6 +22,7 @@ export default function Tasks() {
     const [users, setUsers] = useState<UserDto[]>([]);
     const userRole = useAppSelector(selectLoggedUser)?.role;
     const dispatch = useAppDispatch();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const loadUserTasks = useCallback(() => {
         axios.all([
@@ -36,10 +38,12 @@ export default function Tasks() {
                 unassignedTasksResponse?.data?.map(task => ({ id: task.code, ...task }));
             const result = currentUserTasksWithIds.concat(unassignedTasksWithIds);
             setTasks(result);
-        }));
+        })).finally(() => setLoading(false));
     }, []);
 
     const loadUsersAndProjects = useCallback(() => {
+        setLoading(true);
+
         axios.all<AxiosResponse<any>>([
             userService.FindAll(),
             projectService.FindAll(),
@@ -57,7 +61,7 @@ export default function Tasks() {
         loadUsersAndProjects();
     }, [loadUsersAndProjects])
 
-    const deleteTask = (code: number) => {
+    const deleteTask = useCallback((code: number) => {
         taskService.DeleteByCode(code)
             .then(() => {
                 loadUserTasks();
@@ -66,7 +70,19 @@ export default function Tasks() {
                     type: 'success'
                 }));
             });
-    };
+    }, [loadUserTasks, dispatch]);
+
+    // eslint-disable-next-line
+    const handleEditCellChangeCommitted = useCallback(
+        handleCellEditWithDbUpdate<TaskDto>(
+            tasks,
+            setTasks,
+            'code',
+            taskService.Update,
+            dispatch,
+            () => loadUserTasks(),
+            'Task %s has been successfully updated!'
+        ), [tasks, loadUserTasks]);
 
     return (
         <>
@@ -85,9 +101,15 @@ export default function Tasks() {
                                 columns={getTasksColumnsDefs({
                                     classes, deleteTask, userRole, users, projects
                                 })}
-                                autoPageSize={true}
                                 disableSelectionOnClick
-                                loading={!tasks || !projects || !users}
+                                onEditCellChangeCommitted={handleEditCellChangeCommitted}
+                                sortModel={[
+                                    {
+                                        field: 'code',
+                                        sort: 'asc'
+                                    },
+                                ]}
+                                loading={loading}
                             />
                         </div>
                     </Paper>

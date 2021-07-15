@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Grid, Paper } from '@material-ui/core';
 import useProjectsStyles from './Projects.styles';
-import { DataGrid, GridEditCellPropsParams } from '@material-ui/data-grid';
+import { DataGrid, GridRowParams } from '@material-ui/data-grid';
 import { projectService } from '../../../services/projectService';
 import { ProjectDto } from '../../../models/dtos/ProjectDto';
 import { getProjectsColumnsDefs } from './getProjectsColumnsDef';
@@ -12,6 +12,7 @@ import { Role } from '../../../models/dtos/Role';
 import { AxiosResponse } from 'axios';
 import { UserDto } from '../../../models/dtos/UserDto';
 import { userService } from '../../../services/userService';
+import { handleCellEditWithDbUpdate } from '../../../utils/Utils';
 
 
 export default function Projects() {
@@ -21,6 +22,7 @@ export default function Projects() {
     const [users, setUsers] = useState<UserDto[]>([]);
     const userRole = useAppSelector(selectLoggedUser)?.role;
     const dispatch = useAppDispatch();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const loadProjects = useCallback(() => {
         let projectsRetrieveFn: Promise<AxiosResponse<ProjectDto[]>>;
@@ -34,10 +36,12 @@ export default function Projects() {
         projectsRetrieveFn.then((response) => {
             const projectsWithIds = response?.data?.map(proj => ({ id: proj.code, ...proj }));
             setProjects(projectsWithIds);
-        });
+        }).finally(() => setLoading(false));
     }, [userRole]);
 
     const loadUsers = useCallback(() => {
+        setLoading(true);
+
         userService.FindAll().then((response) => {
             setUsers(response?.data);
 
@@ -49,7 +53,7 @@ export default function Projects() {
         loadUsers();
     }, [loadUsers]);
 
-    const deleteProject = (code: number) => {
+    const deleteProject = useCallback((code: number) => {
         projectService.DeleteByCode(code)
             .then(() => {
                 loadProjects();
@@ -58,24 +62,23 @@ export default function Projects() {
                     type: 'success'
                 }));
             });
-    };
+    }, [dispatch, loadProjects]);
 
-    // const handleEditCellChangeCommitted = useCallback(
-    //     ({ id, field, props }: GridEditCellPropsParams) => {
-    //       if (field === 'projectManager') {
-    //         const [firstName, lastName] = props.value!.toString().split(' ');
-    //         const updatedRows = rows.map((row) => {
-    //           if (row.id === id) {
-    //             return { ...row, firstName, lastName };
-    //           }
-    //           return row;
-    //         });
-    //         setRows(updatedRows);
-    //       }
-    //     },
-    //     [rows],
+    const navigateToProject = useCallback((code: number) => {
+        history.push("/projects/" + code);
+    }, [history]);
 
-    //   );
+    // eslint-disable-next-line
+    const handleEditCellChangeCommitted = useCallback(
+        handleCellEditWithDbUpdate<ProjectDto>(
+            projects,
+            setProjects,
+            'code',
+            projectService.Update,
+            dispatch,
+            () => loadProjects(),
+            'Project %s has been successfully updated!'
+        ), [projects, loadProjects]);
 
     return (
         <>
@@ -95,10 +98,21 @@ export default function Projects() {
                         <div style={{ height: 500, minHeight: 500, width: '100%' }}>
                             <DataGrid
                                 rows={projects}
-                                columns={getProjectsColumnsDefs({ classes, deleteProject, history, users })}
-                                autoPageSize={true}
+                                columns={getProjectsColumnsDefs({
+                                    classes,
+                                    deleteProject,
+                                    navigateToProject,
+                                    users
+                                })}
                                 disableSelectionOnClick
-                                loading={!projects || !users}
+                                onEditCellChangeCommitted={handleEditCellChangeCommitted}
+                                sortModel={[
+                                    {
+                                        field: 'code',
+                                        sort: 'asc'
+                                    },
+                                ]}
+                                loading={loading}
                             ></DataGrid>
                         </div>
                     </Paper>

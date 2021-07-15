@@ -4,7 +4,7 @@ import { TaskDto } from "../models/dtos/TaskDto";
 
 export const taskService = {
     GetByCode: (code: number): Promise<AxiosResponse<TaskDto>> => {
-        return axios.get(`${endpoints.task.getByCode}/${code}`);
+        return axios.get(endpoints.task.getByCode(code));
     },
     FindAll: (): Promise<AxiosResponse<TaskDto[]>> => {
         return axios.get(endpoints.task.findAll);
@@ -16,9 +16,12 @@ export const taskService = {
         return axios.get(endpoints.task.findNotAssigned);
     },
     FindByProject: (projectCode: number): Promise<AxiosResponse<TaskDto[]>> => {
-        return axios.get(`${endpoints.task.findByProject}/${projectCode}`);
+        return axios.get(endpoints.task.findByProject(projectCode));
+    },
+    Update: (task: TaskDto): Promise<AxiosResponse<TaskDto>> => {
+        return axios.put(endpoints.task.updateByCode(task.code), task);
     },
     DeleteByCode: (code: number): Promise<AxiosResponse> => {
-        return axios.delete(`${endpoints.task.deleteByCode}/${code}`);
+        return axios.delete(endpoints.task.deleteByCode(code));
     }
 };

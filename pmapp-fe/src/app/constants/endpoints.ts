@@ -8,20 +8,24 @@ const endpoints = {
     },
     user: {
         findAll: `${environment.baseUrl}/user/all`,
+        updateByUsername: (username: string) => `${environment.baseUrl}/user/${username}`,
+        deleteByUsername: (username: string) => `${environment.baseUrl}/user/${username}`,
     },
     project: {
-        getByCode: `${environment.baseUrl}/project`,
+        getByCode: (code: number) => `${environment.baseUrl}/project/${code}`,
         me: `${environment.baseUrl}/project/me`,
         findAll: `${environment.baseUrl}/project/all`,
-        deleteByCode: `${environment.baseUrl}/project`,
+        updateByCode: (code: number) => `${environment.baseUrl}/project/${code}`,
+        deleteByCode: (code: number) => `${environment.baseUrl}/project/${code}`,
     },
     task: {
-        getByCode: `${environment.baseUrl}/task`,
+        getByCode: (code: number) => `${environment.baseUrl}/task/${code}`,
         me: `${environment.baseUrl}/task/me`,
         findAll: `${environment.baseUrl}/task/all`,
         findNotAssigned: `${environment.baseUrl}/task/findNotAssigned`,
-        findByProject: `${environment.baseUrl}/task/findByProject`,
-        deleteByCode: `${environment.baseUrl}/task`,
+        findByProject: (projectCode: number) => `${environment.baseUrl}/task/findByProject/${projectCode}`,
+        updateByCode: (code: number) => `${environment.baseUrl}/task/${code}`,
+        deleteByCode: (code: number) => `${environment.baseUrl}/task/${code}`,
     }
 };
 
