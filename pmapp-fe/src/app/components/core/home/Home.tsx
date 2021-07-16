@@ -7,7 +7,7 @@ export default function Home() {
 
     return <div className={classes.home}>
         <header className={classes.homeHeader}>
-            <h2>Welcome to Project Management App</h2>
+            <h2>Welcome to Projects Management App</h2>
             <img src={logo} className={classes.homeLogo} alt="logo" />
         </header>
     </div>

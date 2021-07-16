@@ -20,5 +20,5 @@ test('renders welcome text', () => {
     </StyledEngineProvider>
   );
 
-  expect(getByText(/Welcome to Project Management App/i)).toBeInTheDocument();
+  expect(getByText(/Welcome to Projects Management App/i)).toBeInTheDocument();
 });

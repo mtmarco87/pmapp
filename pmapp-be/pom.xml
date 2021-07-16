@@ -12,7 +12,7 @@
 	<artifactId>pmapp</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<name>pmapp</name>
-	<description>Project Management App BE</description>
+	<description>Projects Management App BE</description>
 	<properties>
 		<java.version>8</java.version>
 	</properties>

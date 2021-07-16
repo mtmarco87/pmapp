@@ -55,7 +55,7 @@ public class SpringFoxConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("PmApp")
-                .description("Project Management App API")
+                .description("Projects Management App API")
                 .version("1.0.0")
                 .build();
     }
