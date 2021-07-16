@@ -1,5 +1,5 @@
 export interface ProjectDto {
-    code: number;
-    name: string;
-    projectManager: string;
+    code?: number | null;
+    name?: string;
+    projectManager?: string;
 }

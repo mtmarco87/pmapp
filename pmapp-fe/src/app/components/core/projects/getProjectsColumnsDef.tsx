@@ -7,8 +7,8 @@ import { Role } from '../../../models/dtos/Role';
 import { DataGridSelectField } from '../../shared/DatagridSelectField/DatagridSelectField';
 
 
-export const getProjectsColumnsDefs = ({ classes, deleteProject, navigateToProject, users }:
-    { classes: any, deleteProject: Function, navigateToProject: Function, users: UserDto[] }) => {
+export const getProjectsColumnsDefs = ({ classes, deleteProject, navigateToProject, userRole, users }:
+    { classes: any, deleteProject: Function, navigateToProject: Function, userRole: Role | undefined, users: UserDto[] }) => {
     const columns: GridColDef[] = (
         [
             {
@@ -27,7 +27,7 @@ export const getProjectsColumnsDefs = ({ classes, deleteProject, navigateToProje
                 field: 'projectManager',
                 headerName: 'Project Manager',
                 width: 587,
-                editable: true,
+                editable: userRole === Role.Administrator,
                 valueFormatter: (params) => {
                     const projectManager = users?.find(u => u.username === params.value);
                     return !!projectManager ?
@@ -44,7 +44,8 @@ export const getProjectsColumnsDefs = ({ classes, deleteProject, navigateToProje
                             idField: 'username',
                             labelRenderFn: (user: UserDto) => {
                                 return `${user?.name} ${user?.surname}`
-                            }
+                            },
+                            emptyOptionDisabled: true
                         },
                         params
                     );

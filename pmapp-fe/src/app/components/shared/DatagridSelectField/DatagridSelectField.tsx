@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 function DatagridSelectFieldImpl<T>({ selectParams, dataGridParams }:
   { selectParams: SelectParams<T>, dataGridParams: GridCellParams }) {
-  const { options, idField, labelRenderFn } = selectParams;
+  const { options, idField, labelRenderFn, emptyOptionDisabled } = selectParams;
   const { id, value, api, field }:
     { id: GridRowId, value: GridCellValue, api: GridApi, field: string } = dataGridParams;
   const classes = useStyles();
@@ -27,7 +27,7 @@ function DatagridSelectFieldImpl<T>({ selectParams, dataGridParams }:
   const handleChange = useCallback(
     (event) => {
       const editProps = {
-        value: event.target.value
+        value: event.target.value !== 'emptyOption' ? event.target.value : null
       };
 
       // Commit selected value internally in the Grid
@@ -48,15 +48,23 @@ function DatagridSelectFieldImpl<T>({ selectParams, dataGridParams }:
     <FormControl className={classes.formControl}>
       <Select
         id="pm-select"
-        value={value}
+        value={value ?? 'emptyOption'}
         onChange={handleChange}
       >
+        {!emptyOptionDisabled && (
+          <MenuItem
+            key='emptyOption'
+            value={'emptyOption'}>
+            N/A
+          </MenuItem>
+        )}
         {options
           .map((item: any) => (
             <MenuItem
               key={!!idField ? item[idField] : item}
               value={!!idField ? item[idField] : item}>
-              {!!labelRenderFn ? labelRenderFn(item) : item}</MenuItem>
+              {!!labelRenderFn ? labelRenderFn(item) : item}
+            </MenuItem>
           ))}
       </Select>
     </FormControl>
@@ -66,7 +74,8 @@ function DatagridSelectFieldImpl<T>({ selectParams, dataGridParams }:
 interface SelectParams<T> {
   options: T[],
   idField?: string,
-  labelRenderFn?: Function
+  labelRenderFn?: Function,
+  emptyOptionDisabled?: boolean
 }
 
 export function DataGridSelectField<T>(selectParams: SelectParams<T>, dataGridParams: GridCellParams) {

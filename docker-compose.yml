@@ -30,6 +30,13 @@ services:
     environment:
       WAIT_HOSTS: db:5432    
 
+  fe:
+    image: ricardo/pmapp-fe
+    networks:
+      - app-tier
+    ports:
+      - "3000:3000"
+
   adminer:
     image: adminer
     networks:

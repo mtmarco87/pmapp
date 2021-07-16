@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Grid, Paper } from '@material-ui/core';
+import { Button, Grid, Icon, Paper } from '@material-ui/core';
 import { DataGrid } from '@material-ui/data-grid';
 import useUsersStyles from './Users.styles';
 import { userService } from '../../../services/userService';
@@ -11,6 +11,7 @@ import { Redirect } from 'react-router';
 import { Role } from '../../../models/dtos/Role';
 import { getUsersColumnsDefs } from './getUsersColumnsDef';
 import { handleCellEditWithDbUpdate } from '../../../utils/Utils';
+import CreateUserDialog from '../../shared/CreateUserDialog/CreateUserDialog';
 
 export default function Users() {
     const classes = useUsersStyles();
@@ -18,7 +19,7 @@ export default function Users() {
     const userRole = useAppSelector(selectLoggedUser)?.role;
     const dispatch = useAppDispatch();
     const [loading, setLoading] = useState<boolean>(false);
-
+    const [openCreate, setOpenCreate] = useState<boolean>(false);
 
     const loadUsers = useCallback(() => {
         userService.FindAll().then((response) => {
@@ -31,7 +32,7 @@ export default function Users() {
         setLoading(true);
 
         loadUsers();
-    }, []);
+    }, [loadUsers]);
 
     const deleteUser = useCallback((username: string) => {
         userService.DeleteByUsername(username)
@@ -43,11 +44,6 @@ export default function Users() {
                 }));
             });
     }, [loadUsers, dispatch]);
-
-    if (userRole !== Role.Administrator) {
-        dispatch(setStatus(SessionStatus.Forbidden));
-        return <Redirect to={{ pathname: '/' }} />;
-    }
 
     // eslint-disable-next-line
     const handleEditCellChangeCommitted = useCallback(
@@ -61,9 +57,40 @@ export default function Users() {
             'User %s has been successfully updated!'
         ), [users, loadUsers]);
 
+    const handleCreateDialogOpen = useCallback(() => {
+        setOpenCreate(true);
+    }, []);
+
+    const handleCreate = useCallback((user: UserDto) => {
+        userService.Create(user).then((response) => {
+            loadUsers();
+            dispatch(setNotification({
+                message: 'User ' + response?.data?.username + ' has been successfully created!',
+                type: 'success'
+            }));
+            setOpenCreate(false);
+        });
+    }, [dispatch, loadUsers]);
+
+    if (userRole !== Role.Administrator) {
+        dispatch(setStatus(SessionStatus.Forbidden));
+        return <Redirect to={{ pathname: '/' }} />;
+    }
+
     return (
         <>
-            <h1>Users</h1>
+            <div className={classes.header}>
+                <h1>Users</h1>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    className={classes.button}
+                    endIcon={<Icon>add</Icon>}
+                    onClick={handleCreateDialogOpen}
+                >
+                    Create
+                </Button>
+            </div>
             <span>Users management</span>
             <br />
             <br />
@@ -94,6 +121,11 @@ export default function Users() {
                     </Paper>
                 </Grid>
             </Grid>
+            <CreateUserDialog
+                open={openCreate}
+                setOpen={setOpenCreate}
+                handleCreate={handleCreate}
+            />
         </>
     );
 }

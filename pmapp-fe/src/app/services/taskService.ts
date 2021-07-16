@@ -3,6 +3,9 @@ import endpoints from "../constants/endpoints";
 import { TaskDto } from "../models/dtos/TaskDto";
 
 export const taskService = {
+    Create: (task: TaskDto): Promise<AxiosResponse<TaskDto>> => {
+        return axios.post(endpoints.task.create, task);
+    },
     GetByCode: (code: number): Promise<AxiosResponse<TaskDto>> => {
         return axios.get(endpoints.task.getByCode(code));
     },
@@ -19,7 +22,7 @@ export const taskService = {
         return axios.get(endpoints.task.findByProject(projectCode));
     },
     Update: (task: TaskDto): Promise<AxiosResponse<TaskDto>> => {
-        return axios.put(endpoints.task.updateByCode(task.code), task);
+        return axios.put(endpoints.task.updateByCode(task.code!), task);
     },
     DeleteByCode: (code: number): Promise<AxiosResponse> => {
         return axios.delete(endpoints.task.deleteByCode(code));

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Grid, Paper } from '@material-ui/core';
+import { Button, Grid, Icon, Paper } from '@material-ui/core';
 import useTasksStyles from './Tasks.styles';
 import { DataGrid } from '@material-ui/data-grid';
 import { getTasksColumnsDefs } from './getTasksColumnsDef';
@@ -13,6 +13,8 @@ import { userService } from '../../../services/userService';
 import { ProjectDto } from '../../../models/dtos/ProjectDto';
 import { UserDto } from '../../../models/dtos/UserDto';
 import { handleCellEditWithDbUpdate } from '../../../utils/Utils';
+import { Role } from '../../../models/dtos/Role';
+import CreateTaskDialog from '../../shared/CreateTaskDialog/CreateTaskDialog';
 
 
 export default function Tasks() {
@@ -20,9 +22,10 @@ export default function Tasks() {
     const [tasks, setTasks] = useState<TaskDto[]>([]);
     const [projects, setProjects] = useState<ProjectDto[]>([]);
     const [users, setUsers] = useState<UserDto[]>([]);
-    const userRole = useAppSelector(selectLoggedUser)?.role;
+    const loggedUser = useAppSelector(selectLoggedUser);
     const dispatch = useAppDispatch();
     const [loading, setLoading] = useState<boolean>(false);
+    const [openCreate, setOpenCreate] = useState<boolean>(false);
 
     const loadUserTasks = useCallback(() => {
         axios.all([
@@ -84,10 +87,38 @@ export default function Tasks() {
             'Task %s has been successfully updated!'
         ), [tasks, loadUserTasks]);
 
+    const handleCreateDialogOpen = useCallback(() => {
+        setOpenCreate(true);
+    }, []);
+
+    const handleCreate = useCallback((task: TaskDto) => {
+        taskService.Create(task).then((response) => {
+            loadUserTasks();
+            dispatch(setNotification({
+                message: 'Task ' + response?.data?.code + ' has been successfully created!',
+                type: 'success'
+            }));
+            setOpenCreate(false);
+        });
+    }, [dispatch, loadUserTasks]);
+
     return (
         <>
-            <h1>Your Tasks</h1>
-            <span>Here you will find the list of your tasks.</span>
+            <div className={classes.header}>
+                <h1>Your Tasks</h1>
+                {(loggedUser?.role === Role.Administrator || loggedUser?.role === Role.ProjectManager) &&
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.button}
+                        endIcon={<Icon>add</Icon>}
+                        onClick={handleCreateDialogOpen}
+                    >
+                        Create
+                    </Button>
+                }
+            </div>
+            <span>Here you will find the list of your tasks and the unassigned tasks.</span>
             <br />
             <br />
 
@@ -99,7 +130,7 @@ export default function Tasks() {
                             <DataGrid
                                 rows={tasks}
                                 columns={getTasksColumnsDefs({
-                                    classes, deleteTask, userRole, users, projects
+                                    classes, deleteTask, loggedUser, users, projects
                                 })}
                                 disableSelectionOnClick
                                 onEditCellChangeCommitted={handleEditCellChangeCommitted}
@@ -115,6 +146,14 @@ export default function Tasks() {
                     </Paper>
                 </Grid>
             </Grid>
+            <CreateTaskDialog
+                open={openCreate}
+                setOpen={setOpenCreate}
+                handleCreate={handleCreate}
+                loggedUser={loggedUser}
+                users={users}
+                projects={projects}
+            />
         </>
     );
 }

@@ -30,7 +30,7 @@ export default function setupAxiosInterceptors(store: typeof AppStore): void {
         (response) => response,
         async (error) => {
             console.log(error);
-            if (error.response.status === 401) {
+            if (error.response?.status === 401) {
                 // In case of 401 (Unauthorized) user login credentials are expired or the user is not logged in
                 const originalRequest = error.config;
                 if (error.response.headers['auth-status'] === 'token-expired' && !originalRequest._retry) {
@@ -43,7 +43,7 @@ export default function setupAxiosInterceptors(store: typeof AppStore): void {
                     store.dispatch(setStatus(SessionStatus.Unauthorized, true));
                 }
             }
-            else if (error.response.status === 403) {
+            else if (error.response?.status === 403) {
                 // In case of 403 (Forbidden) user tried to access resources forbidden to its role
                 // so we dispatch an action to the store to just show an error message
                 store.dispatch(setStatus(SessionStatus.Forbidden));

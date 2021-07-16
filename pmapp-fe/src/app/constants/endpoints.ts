@@ -7,11 +7,13 @@ const endpoints = {
         refreshtoken: `${environment.baseUrl}/auth/refreshtoken`,
     },
     user: {
+        create: `${environment.baseUrl}/user`,
         findAll: `${environment.baseUrl}/user/all`,
         updateByUsername: (username: string) => `${environment.baseUrl}/user/${username}`,
         deleteByUsername: (username: string) => `${environment.baseUrl}/user/${username}`,
     },
     project: {
+        create: `${environment.baseUrl}/project`,
         getByCode: (code: number) => `${environment.baseUrl}/project/${code}`,
         me: `${environment.baseUrl}/project/me`,
         findAll: `${environment.baseUrl}/project/all`,
@@ -19,6 +21,7 @@ const endpoints = {
         deleteByCode: (code: number) => `${environment.baseUrl}/project/${code}`,
     },
     task: {
+        create: `${environment.baseUrl}/task`,
         getByCode: (code: number) => `${environment.baseUrl}/task/${code}`,
         me: `${environment.baseUrl}/task/me`,
         findAll: `${environment.baseUrl}/task/all`,

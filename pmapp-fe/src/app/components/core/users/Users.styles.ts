@@ -16,6 +16,15 @@ const useUsersStyles = makeStyles((theme: Theme) => ({
         flexDirection: 'row',
         justifyContent: 'center',
         width: '100%'
+    },
+    button: {
+        maxHeight: 50,
+        margin: 'auto 0 auto 0'
+    },
+    header: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     }
 }));
 

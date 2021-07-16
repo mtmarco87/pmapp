@@ -1,10 +1,10 @@
 import { Role } from "./Role";
 
 export interface UserDto {
-    username: string;
-    email: string;
+    username: string | null;
+    email?: string;
     name?: string;
     surname?: string;
-    role: Role;
+    role?: Role;
     password?: string;
 }

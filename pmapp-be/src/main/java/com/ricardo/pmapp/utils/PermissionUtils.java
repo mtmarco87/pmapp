@@ -8,16 +8,16 @@ import com.ricardo.pmapp.security.models.UserPrincipal;
 public class PermissionUtils {
 
     public static boolean canModifyProject(Project project, UserPrincipal requester) {
-        return requester.getRole() == Role.Administrator ||
+        return project == null ||
+                requester.getRole() == Role.Administrator ||
                 (requester.getRole() == Role.ProjectManager &&
                         requester.getUsername().equals(project.getProjectManager().getUsername()));
     }
 
-
-    public static boolean canModifyTask(Task task, UserPrincipal requester) {
-        return task.getProject() == null ||
-                requester.getRole() == Role.Administrator ||
-                (requester.getRole() == Role.ProjectManager &&
-                        requester.getUsername().equals(task.getProject().getProjectManager().getUsername()));
+    public static boolean canModifyTask(Task task, Project project, UserPrincipal requester) {
+        return canModifyProject(project, requester) ||
+                task.getAssignee() == null ||
+                ((requester.getRole() == Role.ProjectManager || requester.getRole() == Role.Developer) &&
+                        requester.getUsername().equals(task.getAssignee().getUsername()));
     }
 }

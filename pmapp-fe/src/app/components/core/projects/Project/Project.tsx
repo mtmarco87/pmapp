@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Grid, Paper, Typography } from '@material-ui/core';
+import { Button, Grid, Icon, Paper, Typography } from '@material-ui/core';
 import useProjectStyles from './Project.styles';
 import { DataGrid } from '@material-ui/data-grid';
 import { projectService } from '../../../../services/projectService';
@@ -14,6 +14,7 @@ import { handleCellEditWithDbUpdate, isNotFound } from '../../../../utils/Utils'
 import axios, { AxiosResponse } from 'axios';
 import { userService } from '../../../../services/userService';
 import { UserDto } from '../../../../models/dtos/UserDto';
+import CreateTaskDialog from '../../../shared/CreateTaskDialog/CreateTaskDialog';
 
 
 export default function Project() {
@@ -24,9 +25,10 @@ export default function Project() {
     const [projects, setProjects] = useState<ProjectDto[]>([]);
     const [users, setUsers] = useState<UserDto[]>([]);
     const [redirect, setRedirect] = useState<boolean>(false);
-    const userRole = useAppSelector(selectLoggedUser)?.role;
+    const loggedUser = useAppSelector(selectLoggedUser);
     const dispatch = useAppDispatch();
     const [loading, setLoading] = useState<boolean>(false);
+    const [openCreate, setOpenCreate] = useState<boolean>(false);
 
     const loadProjectTasks = useCallback(() => {
         taskService.FindByProject(+code).then((response) => {
@@ -84,13 +86,40 @@ export default function Project() {
             'Task %s has been successfully updated!'
         ), [tasks, loadProjectTasks]);
 
+    const handleCreateDialogOpen = useCallback(() => {
+        setOpenCreate(true);
+    }, []);
+
+    const handleCreate = useCallback((task: TaskDto) => {
+        taskService.Create(task).then((response) => {
+            loadProjectTasks();
+            dispatch(setNotification({
+                message: 'Task ' + response?.data?.code + ' has been successfully created!',
+                type: 'success'
+            }));
+            setOpenCreate(false);
+        });
+    }, [dispatch, loadProjectTasks]);
+
     if (redirect) {
         return <Redirect to={{ pathname: '/' }} />;
     }
 
     return (
         <>
-            <h1>Project {code}</h1>
+            <div className={classes.header}>
+                <h1>Project {code}</h1>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    className={classes.button}
+                    endIcon={<Icon>add</Icon>}
+                    onClick={handleCreateDialogOpen}
+                >
+                    Create
+                </Button>
+            </div>
+
             <Typography color="inherit" noWrap>
                 <b>Name:</b> {project?.name} / <b>Project Manager:</b> {project?.projectManager}
             </Typography>
@@ -108,7 +137,7 @@ export default function Project() {
                             <DataGrid
                                 rows={tasks}
                                 columns={getTasksColumnsDefs({
-                                    classes, deleteTask, userRole, users, projects
+                                    classes, deleteTask, loggedUser, users, currentProjectCode: +code, projects
                                 })}
                                 disableSelectionOnClick
                                 onEditCellChangeCommitted={handleEditCellChangeCommitted}
@@ -124,6 +153,15 @@ export default function Project() {
                     </Paper>
                 </Grid>
             </Grid>
+            <CreateTaskDialog
+                open={openCreate}
+                setOpen={setOpenCreate}
+                handleCreate={handleCreate}
+                loggedUser={loggedUser}
+                users={users}
+                currentProjectCode={+code}
+                projects={projects}
+            />
         </>
     );
 }

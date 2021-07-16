@@ -67,7 +67,7 @@ public class TaskController {
         return taskService.findByProject(code).stream().map(taskConverter::ToDto).collect(Collectors.toList());
     }
 
-    @RolesAllowed({"Administrator", "ProjectManager"})
+    @RolesAllowed({"Administrator", "ProjectManager", "Developer"})
     @PutMapping("/{code}")
     public TaskDto updateTaskByCode(@RequestBody TaskDto taskDto, @PathVariable Long code,
                                     @CurrentUser UserPrincipal userPrincipal)

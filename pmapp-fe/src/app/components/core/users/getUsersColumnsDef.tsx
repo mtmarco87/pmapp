@@ -44,6 +44,7 @@ export const getUsersColumnsDefs = ({ classes, deleteUser }: { classes: any, del
                 return DataGridSelectField(
                     {
                         options: [Role.Developer, Role.ProjectManager, Role.Administrator],
+                        emptyOptionDisabled: true
                     },
                     params
                 );

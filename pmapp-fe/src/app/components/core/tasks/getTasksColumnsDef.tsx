@@ -8,8 +8,8 @@ import { TaskStatus } from '../../../models/dtos/TaskStatus';
 import { UserDto } from '../../../models/dtos/UserDto';
 import { DataGridSelectField } from '../../shared/DatagridSelectField/DatagridSelectField';
 
-export const getTasksColumnsDefs = ({ classes, deleteTask, userRole, users, projects }:
-    { classes: any, deleteTask: Function, userRole: Role | undefined, users: UserDto[], projects: ProjectDto[] }) => {
+export const getTasksColumnsDefs = ({ classes, deleteTask, loggedUser, users, currentProjectCode, projects }:
+    { classes: any, deleteTask: Function, loggedUser: UserDto | undefined | null, users: UserDto[], currentProjectCode?: number, projects: ProjectDto[] }) => {
     const columns: GridColDef[] = (
         [
             {
@@ -22,7 +22,7 @@ export const getTasksColumnsDefs = ({ classes, deleteTask, userRole, users, proj
                 field: 'assignee',
                 headerName: 'Assignee',
                 width: 200,
-                editable: userRole === Role.Administrator || userRole === Role.ProjectManager,
+                editable: true,
                 valueFormatter: (params) => {
                     const projectManager = users?.find(u => u.username === params.value);
                     return !!projectManager ?
@@ -33,10 +33,20 @@ export const getTasksColumnsDefs = ({ classes, deleteTask, userRole, users, proj
                 renderEditCell: (params) => {
                     return DataGridSelectField(
                         {
-                            options: userRole === Role.Administrator ?
-                                users
-                                :
-                                users.filter(usr => usr.role !== Role.Administrator),
+                            options: ((): UserDto[] => {
+                                switch (loggedUser?.role) {
+                                    case Role.Administrator:
+                                        return users;
+                                    case Role.ProjectManager:
+                                        return !!currentProjectCode ?
+                                            users.filter(usr => usr.role !== Role.Administrator)
+                                            :
+                                            [loggedUser as UserDto];
+                                    case Role.Developer:
+                                    default:
+                                        return [loggedUser as UserDto];
+                                }
+                            })(),
                             idField: 'username',
                             labelRenderFn: (user: UserDto) => {
                                 return `${user?.name} ${user?.surname}`
@@ -50,7 +60,7 @@ export const getTasksColumnsDefs = ({ classes, deleteTask, userRole, users, proj
                 field: 'project',
                 headerName: 'Project',
                 width: 200,
-                editable: userRole === Role.Administrator,
+                editable: loggedUser?.role === Role.Administrator,
                 valueFormatter: (params) => {
                     return projects?.find(p => p.code === params.value)?.name;
                 },
@@ -88,7 +98,8 @@ export const getTasksColumnsDefs = ({ classes, deleteTask, userRole, users, proj
                 renderEditCell: (params) => {
                     return DataGridSelectField(
                         {
-                            options: [TaskStatus.New, TaskStatus.InProgress, TaskStatus.Completed]
+                            options: [TaskStatus.New, TaskStatus.InProgress, TaskStatus.Completed],
+                            emptyOptionDisabled: true
                         },
                         params
                     );
@@ -98,7 +109,7 @@ export const getTasksColumnsDefs = ({ classes, deleteTask, userRole, users, proj
                 field: 'deadline',
                 headerName: 'Deadline',
                 width: 150,
-                editable: userRole === Role.Administrator || userRole === Role.ProjectManager,
+                editable: loggedUser?.role === Role.Administrator || loggedUser?.role === Role.ProjectManager,
                 type: 'date',
                 valueGetter: (params) => {
                     const dateStr: string = params?.value as string;
@@ -113,7 +124,7 @@ export const getTasksColumnsDefs = ({ classes, deleteTask, userRole, users, proj
                 renderCell: (params) => {
                     return (
                         <>
-                            {userRole !== Role.Developer &&
+                            {loggedUser?.role === Role.Administrator &&
                                 < div className={classes.actionButtons} >
                                     <IconButton
                                         edge='start'
