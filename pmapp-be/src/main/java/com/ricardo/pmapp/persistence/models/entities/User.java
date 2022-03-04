@@ -17,7 +17,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"username", "email"})})
+@Table(name = "users",
+        uniqueConstraints = {@UniqueConstraint(columnNames = "username"), @UniqueConstraint(columnNames = "email")})
 @ToString
 @EqualsAndHashCode
 public class User {
@@ -39,9 +40,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy="assignee")
+    @OneToMany(mappedBy = "assignee")
     private List<Task> tasks = new ArrayList<>();
 
-    @OneToMany(mappedBy="projectManager")
+    @OneToMany(mappedBy = "projectManager")
     private List<Project> projects = new ArrayList<>();
 }

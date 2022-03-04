@@ -21,11 +21,20 @@ export default function Users() {
     const [loading, setLoading] = useState<boolean>(false);
     const [openCreate, setOpenCreate] = useState<boolean>(false);
 
-    const loadUsers = useCallback(() => {
-        userService.FindAll().then((response) => {
-            const usersWithIds = response?.data?.map(user => ({ id: user.username, ...user }));
+    const loadUsers = useCallback(async () => {
+        try {
+            const { data } = await userService.FindAll();
+
+            const usersWithIds = data?.map(user => ({ id: user.username, ...user }));
             setUsers(usersWithIds);
-        }).finally(() => setLoading(false));
+        } catch (ex) {
+        }
+        finally {
+            setLoading(false);
+        }
+
+
+
     }, []);
 
     useEffect(() => {
