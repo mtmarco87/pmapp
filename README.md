@@ -1,108 +1,180 @@
 # Projects Management App
-This application is a simple Projects Management tool built in Java and React. 
-The app features user authentication through JWT token and stateless server session, exposes RESTful APIs secured by RBAC, and allows managing of Projects, Tasks and Users through a FE web application.
 
-# Prerequisites
+Projects Management App is a lightweight and modular tool built with modern technologies like **Java** and **React**, designed to simplify and enhance the management of Projects, Tasks, and Users.
 
-In order to successfully use/test this application you need the following software:
+## Table of Contents
 
-- [Java](https://www.java.com/en/download/) - version 8 or above
-- [Node](https://nodejs.org/it/download/) - LTS version
-- [Yarn](https://yarnpkg.com/lang/en/docs/install/) - suggested (the scripts, the FE project, and lockfile have been built with it, but you may use NPM)
-- [Git](https://git-scm.com/) 
+1. [Project Overview](#project-overview)
+2. [Features](#features)
+3. [Screenshots](#screenshots)
+4. [Environment Setup](#environment-setup)
+   - [Prerequisites](#prerequisites)
+   - [Getting Started](#getting-started)
+   - [Testing the Application](#testing-the-application)
+   - [Accessing the Database](#accessing-the-database)
+5. [Extras](#extras)
+   - [Improvements](#improvements)
+6. [License](#license)
+
+## Project Overview
+
+The **Projects Management App** is a full-stack application featuring a **React** front-end and a **Java Spring Boot** back-end. It offers secure user authentication via **JWT tokens** and stateless server sessions, robust RESTful APIs secured with **RBAC (Role-Based Access Control)**, and an intuitive interface for managing projects efficiently. Fully containerized with **Docker**, the app includes **Swagger API documentation** and is designed with scalability and extensibility in mind.
+
+Originally developed as a technical demonstrator for a tech interview, it highlights the application of modern technologies and best practices in software design and development.
+
+## Features
+
+- **Authentication**: Secure user authentication using JWT tokens.
+- **RBAC**: Role-based access control for API endpoints.
+- **Project Management**: Manage Projects, Tasks, and Users seamlessly.
+- **RESTful APIs**: Exposes APIs for integration and testing.
+- **Swagger Documentation**: Auto-generated API documentation for easy exploration.
+- **Dockerized**: Fully containerized with Docker for simplified deployment.
+- **Token Rotation**: Automatic token refresh for uninterrupted user sessions.
+
+## Screenshots
+
+Here are some screenshots of the Projects Management App in action:
+
+### Application
+
+![App Overview](assets/screenshots/pmapp.gif)
+
+### API
+
+<p align="center">
+  <img src="assets/screenshots/pmapp-api-1.png" alt="API Documentation 1" width="45%" />
+  <img src="assets/screenshots/pmapp-api-2.png" alt="API Documentation 2" width="45%" />
+</p>
+<p align="center">
+  <img src="assets/screenshots/pmapp-api-3.png" alt="API Documentation 3" width="45%" />
+  <img src="assets/screenshots/pmapp-api-4.png" alt="API Documentation 4" width="45%" />
+</p>
+
+## Environment Setup
+
+### Prerequisites
+
+To successfully use or test this application, ensure you have the following software installed:
+
+- [Java](https://www.java.com/en/download/) - Version 8 or higher
+- [Node.js](https://nodejs.org/it/download/) - LTS version
+- [Yarn](https://yarnpkg.com/lang/en/docs/install/) - Recommended (the scripts, front-end project, and lockfile were built with Yarn, but NPM can also be used)
+- [Git](https://git-scm.com/)
 - [Docker](https://www.docker.com/get-started)
 
-# Getting Started
-## Create and run the application
-Clone this repository and make the 'start.sh' script executable:
+### Getting Started
+
+#### Create and Run the Application
+
+Clone this repository and make the `start.sh` script executable:
+
 ```bash
 git clone https://github.com/mtmarco87/pmapp.git
 cd pmapp
 chmod +x ./start.sh
 ```
 
-Launch the 'start.sh' script to automatically install deps, test, build, and run the application:
+Run the `start.sh` script to automatically install dependencies, test, build, and launch the application:
+
 ```bash
 ./start.sh
 ```
-Wait a couple of minutes for the process to finalize. If everything goes well, a browser window should automatically open up pointing to the [PmApp FE homepage](http://localhost:3000).
 
-If you have troubles with the script or you want to manually install and build the app, here are the needed steps:
+Wait a few minutes for the process to complete. If everything is successful, a browser window will automatically open, pointing to the [PmApp Front-End homepage](http://localhost:3000).
+
+If you encounter issues with the script or prefer to manually install and build the app, follow these steps:
+
 ```bash
-#1) BE deps install, test, build and docker image creation
+# 1) Back-End: Install dependencies, test, build, and create a Docker image
 cd pmapp-be
 ./mvnw package
 docker build -t ricardo/pmapp-be .
 
-#2) FE deps install, test, build and docker image creation
+# 2) Front-End: Install dependencies, test, build, and create a Docker image
 cd ../pmapp-fe
 yarn install
 yarn test --watchAll=false
 yarn build
 docker build -t ricardo/pmapp-fe .
 
-#3) Run Docker Compose
+# 3) Run Docker Compose
 cd ..
 docker-compose up -d
 ```
 
-## Testing the application
-The application launches an InitScript at startup time, that creates an initial database structure and some test data.
+### Testing the Application
 
-Hence, you can access the web application at http://localhost:3000/ using a pre-configured user profile to login:
-- **Admin** profile                   => Username: **admin** , Password: **Test123**
-- **Project Manager** profile => Username: **projman** , Password: **Test123**
-- **Developer** profile            => Username: **dev** , Password: **Test123**
+The application runs an initialization script at startup, which creates the initial database structure and populates it with test data.
 
-Furthermore a Swagger API Documentation is generated by the BE application, and you can access it at the following link:
+You can access the web application at [http://localhost:3000/](http://localhost:3000/) using one of the pre-configured user profiles:
+
+| Role                | Username | Password |
+| ------------------- | -------- | -------- |
+| **Admin**           | admin    | Test123  |
+| **Project Manager** | projman  | Test123  |
+| **Developer**       | dev      | Test123  |
+
+Additionally, the back-end application generates a Swagger API documentation, accessible at:
 
 ```bash
 http://localhost:8080/swagger-ui.html
 ```
 
-From here you can test all the APIs. Anyway, since the application needs authentication, you will first need to execute a POST call to the login endpoint with valid credentials to get a JWT token:
+To test the APIs, you must first authenticate by making a POST request to the login endpoint with valid credentials to obtain a JWT token:
+
 ```bash
 http://localhost:8080/auth/login
 ```
 
-The response of this API will contain a valid access token that you can use from now on in the Authorization header of your requests as a Bearer token.
+The response will include a valid access token, which you can use in the `Authorization` header of subsequent requests as a Bearer token.
 
-Usage example with curl:
+Example using `curl`:
+
 ```bash
-curl -X GET "http://localhost:8080/user/all" -H "accept: */*" -H "Authorization: Bearer jwt_token_here"
+curl -X GET "http://localhost:8080/user/all" -H "accept: */*" -H "Authorization: Bearer <YOUR_JWT_TOKEN>"
 ```
 
-Or you can put it in Swagger clicking on the Authorize button prepending the word Bearer to the token (Bearer yourToken).
+Alternatively, you can use the Swagger UI by clicking the "Authorize" button and prepending the word `Bearer` to the token (e.g., `Bearer <YOUR_JWT_TOKEN>`).
 
-Note: the duration of the JWT accessToken has been set to 2 hours, but after this time period a token rotation will be automatically performed by the FE app, that will call the refreshToken endpoint at each token expiration to get a new valid token (with a validity of 1 hour).
+**Note**: The JWT access token is valid for 2 hours. After expiration, the front-end application will automatically perform token rotation by calling the `refreshToken` endpoint to obtain a new token (valid for 1 hour).
 
-## Accessing the DB
-A simple and lightweight UI has been provided to access the DB data. Access the following link with your browser:
+### Accessing the Database
+
+A lightweight UI is available for accessing the database. Open the following link in your browser:
 
 ```bash
 http://localhost:9000/
 ```
 
-Use the following credentials to log-in:
-- System: PostgreSQL
-- Server: db
-- User: postgres
-- Password: pmapp
-- Database: pmapp
+Use the following credentials to log in:
 
-In case you want a more advanced experience to access the database, you may download [PgAdmin](https://www.pgadmin.org/download/).
+- **System**: PostgreSQL
+- **Server**: db
+- **User**: postgres
+- **Password**: pmapp
+- **Database**: pmapp
 
-# Improvements
-The application has been developed for educational purposes, so some important points haven't been addressed and could still be improved, such as:
+For a more advanced database management experience, consider downloading [PgAdmin](https://www.pgadmin.org/download/).
 
-- Add a proper Java/TypeScript documentation: classes have not been always commented
-- Increase test coverage: usually a good software has at least 80%/90% of testing coverage
-- Add meaningful logging: it is quite hard to find out what it is going on in the application if something goes wrong
-- Add more FE validation: more front-end side validations can be done, to avoid some unnecessary api call to the back-end for server side validation
-- Improve BE validation: a cleaner validation layer may be put in place for the REST API models
-- Improve usage of Redux store: for the moment the Redux store has been only used for the Session/application state, essentialy to store logged user information and to dispatch notifications/errors through the application. It can be also used to manage other application data
-- Improve UI
-- Avoid hardcoded credentials/endpoints in repository: these information may be fetched from the environment variables, to prepare the application to CI/CD 
-- Security: for an improved application security in production it would be better to serve the application in HTTPS (i.e.: to avoid man in the middle attacks)
-- OAuth2: a modern OAuth2 login system may be put in place. The back-end is ready for OAuth2 support, and small work needs to be done on the FE to support it. Also an OAuth2 provider account must be created and the BE configuration must be updated accordingly
-- Server-side paginated/optimized API calls: the API calls feeding Projects/Taks/Users views are for now retrieving extra unneeded data in some occasions. For sure an optimization may be done in this sense, and also server side pagination may be implemented
+## Extras
+
+### Improvements
+
+This application was developed for educational purposes, and several areas could be enhanced to make it more robust and production-ready:
+
+- **Documentation**: Add comprehensive Java/TypeScript documentation for all classes and methods.
+- **Test Coverage**: Increase test coverage to at least 80%-90%, which is a standard for high-quality software.
+- **Logging**: Implement meaningful logging to make debugging and issue tracking easier.
+- **Front-End Validation**: Add more client-side validations to reduce unnecessary API calls for server-side validation.
+- **Back-End Validation**: Improve the validation layer for REST API models to ensure cleaner and more reliable data handling.
+- **Redux Store Usage**: Extend the use of the Redux store to manage additional application data beyond session and notifications.
+- **UI Enhancements**: Improve the user interface for a better user experience.
+- **Environment Variables**: Replace hardcoded credentials and endpoints with environment variables to enhance security and support CI/CD pipelines.
+- **Security**: Serve the application over HTTPS in production to prevent man-in-the-middle attacks.
+- **OAuth2 Integration**: Implement a modern OAuth2 login system. The back-end is already prepared for OAuth2 support, but additional work is needed on the front-end. An OAuth2 provider account must also be created, and the back-end configuration updated accordingly.
+- **API Optimization**: Optimize API calls to retrieve only the necessary data and implement server-side pagination for better performance.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE). See the `LICENSE` file for more details.
