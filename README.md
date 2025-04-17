@@ -9,12 +9,16 @@ Projects Management App is a lightweight and modular tool built with modern tech
 3. [Screenshots](#screenshots)
 4. [Environment Setup](#environment-setup)
    - [Prerequisites](#prerequisites)
-   - [Getting Started](#getting-started)
-   - [Testing the Application](#testing-the-application)
+   - [Clone the Repository](#clone-the-repository)
+   - [Setup Steps](#setup-steps)
+5. [Usage](#usage)
+   - [How to Run](#how-to-run)
+   - [Testing](#testing)
    - [Accessing the Database](#accessing-the-database)
-5. [Extras](#extras)
+6. [Development](#development)
    - [Improvements](#improvements)
-6. [License](#license)
+7. [Support](#support)
+8. [License](#license)
 
 ## Project Overview
 
@@ -63,15 +67,20 @@ To successfully use or test this application, ensure you have the following soft
 - [Git](https://git-scm.com/)
 - [Docker](https://www.docker.com/get-started)
 
-### Getting Started
-
-#### Create and Run the Application
-
-Clone this repository and make the `start.sh` script executable:
+### Clone the Repository
 
 ```bash
 git clone https://github.com/mtmarco87/pmapp.git
 cd pmapp
+```
+
+### Setup Steps
+
+#### Create and Run the Application
+
+Make the `start.sh` script executable:
+
+```bash
 chmod +x ./start.sh
 ```
 
@@ -103,7 +112,9 @@ cd ..
 docker-compose up -d
 ```
 
-### Testing the Application
+## Usage
+
+### How to Run
 
 The application runs an initialization script at startup, which creates the initial database structure and populates it with test data.
 
@@ -114,6 +125,8 @@ You can access the web application at [http://localhost:3000/](http://localhost:
 | **Admin**           | admin    | Test123  |
 | **Project Manager** | projman  | Test123  |
 | **Developer**       | dev      | Test123  |
+
+### Testing
 
 Additionally, the back-end application generates a Swagger API documentation, accessible at:
 
@@ -157,7 +170,7 @@ Use the following credentials to log in:
 
 For a more advanced database management experience, consider downloading [PgAdmin](https://www.pgadmin.org/download/).
 
-## Extras
+## Development
 
 ### Improvements
 
@@ -174,6 +187,16 @@ This application was developed for educational purposes, and several areas could
 - **Security**: Serve the application over HTTPS in production to prevent man-in-the-middle attacks.
 - **OAuth2 Integration**: Implement a modern OAuth2 login system. The back-end is already prepared for OAuth2 support, but additional work is needed on the front-end. An OAuth2 provider account must also be created, and the back-end configuration updated accordingly.
 - **API Optimization**: Optimize API calls to retrieve only the necessary data and implement server-side pagination for better performance.
+
+## Support
+
+If you find this project useful, consider supporting its development:
+
+- ⭐ Star the repository to show your appreciation.
+- 💬 Share feedback or suggestions by opening an issue.
+- ☕ [Buy me a coffee](https://buymeacoffee.com/mtmarco87) to support future updates and improvements.
+- 🔵 BTC Address: `bc1qzy6e99pkeq00rsx8jptx93jv56s9ak2lz32e2d`
+- 🟣 ETH Address: `0x38cf74ED056fF994342941372F8ffC5C45E6cF21`
 
 ## License
 
